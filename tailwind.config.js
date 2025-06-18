@@ -5,6 +5,7 @@ module.exports = {
     extend: {
       fontFamily: {
         trajan: ["TrajanFont", "serif"],
+        pacioli: ["Pacioli", "sans-serif"],
       },
     },
   },
