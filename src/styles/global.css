@@ -15,22 +15,19 @@
 
 @import "tailwindcss";
 
-@layer base {
+@layer theme {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
   .font-trajan {
     font-family: "TrajanFont", sans-serif;
   }
   .font-pacioli {
     font-family: "Pacioli", sans-serif;
   }
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  @apply font-trajan;
 }
 
 /* global.css */
