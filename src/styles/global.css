@@ -1,9 +1,25 @@
+@font-face {
+  font-family: "TrajanFont";
+  src: url("../fonts/TrajanPro-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import "tailwindcss";
+
+@layer base {
+  h2,
+  h3 {
+    font-family: "TrajanFont", sans-serif;
+  }
+}
 
 /* global.css */
 html {
   scroll-behavior: smooth;
 }
+
 .image-slide {
   @apply absolute inset-0 opacity-0;
 }
