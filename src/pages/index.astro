@@ -18,9 +18,12 @@ import Layout from "../components/layout/Layout.astro"
 >
   <HeroBanner />
   <section
-    class="bg-stone-100 text-stone-700 min-h-screen flex justify-center items-center"
+    class="bg-stone-100 text-stone-700 min-h-screen flex justify-center items-center relative"
   >
-    <div class="w-11/12 m-auto max-w-[1366px] flex flex-col py-20">
+    <div class="absolute inset-0 overflow-hidden flex items-center">
+      <p class="font-pacioli text-[110vh] -translate-x-1/8 text-stone-200">p</p>
+    </div>
+    <div class="w-11/12 m-auto max-w-[1366px] flex flex-col py-20 z-1">
       <h2 class="text-2xl lg:text-4xl">Past Projects</h2>
       <p>description about past projects</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mt-10 gap-10">
