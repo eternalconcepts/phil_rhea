@@ -1,24 +1,29 @@
 ---
 import { Picture } from "astro:assets"
 
-// Import your images (must be in `src/assets`)
 import image01 from "../../images/sta_02.jpg"
 import image02 from "../../images/civ_01.jpg"
 import image03 from "../../images/res_07.jpg"
 
 const images = [image01, image02, image03]
-const heroText = ["emerald-700", "red-700", "blue-700"]
-const heroBg = [
-  "from-emerald-700 via-emerald-700/50",
-  "from-red-700 via-red-700/50",
-  "from-blue-700 via-blue-700/50",
+const heroColors = [
+  "from-green-700 via-green-700/50",
+  "from-red-800 via-red-800/50",
+  "from-slate-700 via-slate-700/50",
 ]
+const textColors = ["text-green-700", "text-red-800", "text-slate-600"]
 ---
 
+<!-- Tailwind safelist to ensure generation -->
 <div
-  class="w-full aspect-square sm:aspect-video lg:max-h-[50vh] relative overflow-hidden flex flex-col"
+  class="hidden from-green-700 via-green-700/50 from-red-800 via-red-800/50 from-slate-700 via-slate-700/50 text-green-700 text-red-700 from-slate-700"
 >
-  <div class="relative inset-0 w-full h-full object-cover">
+</div>
+
+<div
+  class="w-full aspect-square sm:aspect-video lg:max-h-[50vh] lg:min-h-[25rem] relative overflow-hidden flex flex-col"
+>
+  <div class="relative w-full h-full object-cover">
     {
       images.map((image, i) => (
         <Picture
@@ -26,29 +31,38 @@ const heroBg = [
           formats={["avif", "webp"]}
           alt={`Hero image ${i + 1}`}
           loading={i === 0 ? "eager" : "lazy"}
-          class={`absolute top-0 right-0 w-full h-full lg:w-3/4 object-cover transition-opacity duration-[1.5s] ease-in-out ${
-            i === 0 ? "opacity-100 z-10" : "opacity-0"
+          class={` absolute top-0 right-0 w-full h-full lg:w-3/4 object-cover transition-opacity duration-1000 ease-in-out ${
+            i === 0 ? "opacity-100 z-1" : "opacity-0"
           }`}
           data-hero
         />
       ))
     }
     <div
-      class="hidden: lg:absolute top-0 right-0 w-full h-full lg:w-3/4 z-20 bg-gradient-to-r from-white to-transparent to-30%"
+      class="hidden lg:block lg:absolute top-0 right-0 w-full h-full lg:w-3/4 z-10 bg-gradient-to-r from-white to-transparent to-30%"
     >
     </div>
+    {
+      heroColors.map((gradientClass, i) => (
+        <div
+          class={`hidden lg:block lg:absolute inset-0 w-full h-full lg:w-3/4 bg-gradient-to-r ${gradientClass} to-transparent transition-opacity duration-1000 ease-in-out ${
+            i === 0 ? "opacity-100 z-30" : " opacity-0 z-20 "
+          }`}
+          data-hero-bg
+        />
+      ))
+    }
   </div>
 
   <div
-    id="hero-gradient"
-    class={`lg:absolute inset-0 lg:bg-gradient-to-r  from-25%  via-75% to-transparent lg:text-white lg:text-lg lg:w-3/4 flex items-center font-light z-50 ${heroBg}`}
+    class="lg:absolute inset-0 lg:text-white lg:text-lg lg:w-3/4 flex items-center font-light z-50"
   >
     <div class="flex flex-col lg:m-auto lg:w-1/2 lg:-translate-x-1/4 p-4">
       <h2
         id="hero-title"
-        class={` lg:text-white font-serif text-4xl ${heroText} `}
+        class="font-serif text-4xl lg:text-white transition-colors duration-1000 ease-in-out text-emerald-700"
       >
-        This is a Header
+        Architectural Elegance
       </h2>
       <p class="lg:text-lg max-w-[600px] leading-loose">
         This is a paragraph. That has a lot of text...
@@ -58,51 +72,34 @@ const heroBg = [
 </div>
 
 <script type="module">
-  const delay = 5000 // 5 seconds
+  const delay = 5000
   const images = document.querySelectorAll("[data-hero]")
+  const backgrounds = document.querySelectorAll("[data-hero-bg]")
   const heroTitle = document.getElementById("hero-title")
-  const heroGradient = document.getElementById("hero-gradient")
 
-  const heroColors = ["emerald-700", "red-700", "blue-700"]
+  const textColors = ["text-green-700", "text-red-800", "text-slate-600"]
   let current = 0
 
   setInterval(() => {
-    // Remove previous image
+    // Hide current image and background
     images[current].classList.remove("opacity-100", "z-10")
     images[current].classList.add("opacity-0")
+    backgrounds[current].classList.remove("opacity-100", "z-10")
+    backgrounds[current].classList.add("opacity-0")
 
-    // Remove old color classes
-    const oldColor = heroColors[current]
-    heroTitle.classList.remove(`text-${oldColor}`)
-    heroGradient.classList.remove(`from-${oldColor}`, `via-${oldColor}/50`)
+    // Remove current text color
+    heroTitle.classList.remove(textColors[current])
 
-    // Update index
+    // Move to next
     current = (current + 1) % images.length
 
-    // Show new image
+    // Show next image and background
     images[current].classList.remove("opacity-0")
     images[current].classList.add("opacity-100", "z-10")
+    backgrounds[current].classList.remove("opacity-0")
+    backgrounds[current].classList.add("opacity-100", "z-10")
 
-    // Add new color classes
-    const newColor = heroColors[current]
-    heroTitle.classList.add(`text-${newColor}`)
-    heroGradient.classList.add(`from-${newColor}`, `via-${newColor}/50`)
+    // Add new text color
+    heroTitle.classList.add(textColors[current])
   }, delay)
 </script>
-
-<!-- <script type="module">
-  const delay = 5000 // 5 seconds for each image
-  const images = document.querySelectorAll("[data-hero]")
-  let current = 0
-
-  setInterval(() => {
-    getElementById("hero-gradient").classList.remove("from-emerald-700 ")
-    images[current].classList.remove("opacity-100", "z-10")
-    images[current].classList.add("opacity-0")
-
-    current = (current + 1) % images.length
-
-    images[current].classList.remove("opacity-0")
-    images[current].classList.add("opacity-100", "z-10")
-  }, delay)
-</script> -->
