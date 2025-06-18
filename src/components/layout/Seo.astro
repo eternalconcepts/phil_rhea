@@ -1,0 +1,70 @@
+---
+const {
+  title = "Eternal Concepts by Philip J. Rhea",
+  description = "Architecture, Remodeling, Elevation and Renderings by Philip J. Rhea",
+  canonical = "/",
+  noindex = false,
+  lang = "en",
+  image = "/og-image.jpg", // Replace with your default OG image
+  twitterUsername = "@yourhandle",
+  additionalMeta = [],
+  additionalLink = [],
+} = Astro.props
+
+const siteUrl = "https://your-portfolio.com"
+const fullUrl = `${siteUrl.replace(/\/$/, "")}${canonical}`
+
+// Global JSON-LD Structured Data (Person + WebSite)
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Philip Rhea",
+  url: siteUrl,
+  image: `${siteUrl}/avatar.jpg`,
+  sameAs: ["https://linkedin.com/in/your-profile", "https://x.com/yourhandle"],
+  jobTitle: "Creative Director & Front-End Developer",
+  worksFor: {
+    "@type": "Organization",
+    name: "Freelance / Self-Employed",
+  },
+  description:
+    "Portfolio of Dennis Lindo, showcasing front-end development and creative design expertise.",
+}
+---
+
+<head>
+  <html lang={lang}></html>
+  <title>{title}</title>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content={description} />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={fullUrl} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={image} />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content={fullUrl} />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={image} />
+  <meta name="twitter:creator" content={twitterUsername} />
+
+  <!-- Canonical + Robots -->
+  <link rel="canonical" href={fullUrl} />
+  <meta
+    name="robots"
+    content={noindex ? "noindex, nofollow" : "index, follow"}
+  />
+
+  <!-- Global Structured Data -->
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(structuredData)}
+  />
+</head>

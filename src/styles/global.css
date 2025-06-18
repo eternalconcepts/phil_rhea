@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+/* global.css */
+html {
+  scroll-behavior: smooth;
+}
+.image-slide {
+  @apply absolute inset-0 opacity-0;
+}

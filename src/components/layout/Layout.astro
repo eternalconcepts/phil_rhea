@@ -1,0 +1,57 @@
+---
+import Seo from "./Seo.astro"
+import "../../styles/global.css"
+
+const {
+  title,
+  metaTitle,
+  description,
+  canonical = Astro.url.pathname,
+  noindex = false,
+  image = "/og-image.jpg",
+  twitterUsername = "@yourhandle",
+  additionalMeta = [],
+  additionalLink = [],
+} = Astro.props
+---
+
+<html lang="en">
+  <head>
+    <Seo
+      title={metaTitle || title}
+      description={description}
+      canonical={canonical}
+      noindex={noindex}
+      image={image}
+      twitterUsername={twitterUsername}
+      additionalMeta={additionalMeta}
+      additionalLink={additionalLink}
+    />
+  </head>
+
+  <body class="min-h-screen flex flex-col">
+    <header
+      class="bg-white/60 backdrop-blur-lg border-b-stone-500 text-stone-600 h-16 fixed top-0 w-full z-50 flex justify-center items-center"
+    >
+      <nav class="container mx-auto flex justify-between items-center">
+        <a href="/" class="text-xl font-serif">Eternal Concepts</a>
+        <ul class="flex gap-4">
+          <li><a href="/contact" class="hover:underline">Profile</a></li>
+          <li><a href="/about" class="hover:underline">Philosophy</a></li>
+          <li><a href="/contact" class="hover:underline">Portfolio</a></li>
+          <li><a href="/contact" class="hover:underline">Parley</a></li>
+          <li><a href="/contact" class="hover:underline">Proposal</a></li>
+          <li><a href="/contact" class="hover:underline">Portal</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="w-full h-full min-h-[calc(100vh-8rem)] mt-16">
+      <slot />
+    </main>
+
+    <footer class="bg-gray-800 text-white text-center p-4 w-full h-16">
+      &copy; {new Date().getFullYear()} My Site. All rights reserved.
+    </footer>
+  </body>
+</html>
