@@ -21,9 +21,11 @@ const textColors = ["text-green-700", "text-red-800", "text-slate-600"]
 </div>
 
 <div
-  class="w-full aspect-square sm:aspect-video lg:max-h-[50vh] lg:min-h-[25rem] relative overflow-hidden flex flex-col"
+  class="w-full lg:max-h-[50vh] lg:min-h-[25rem] relative overflow-hidden flex flex-col p-5"
 >
-  <div class="relative w-full h-full object-cover">
+  <div
+    class="relative aspect-square sm:aspect-video w-full h-full object-cover rounded-2xl overflow-hidden"
+  >
     {
       images.map((image, i) => (
         <Picture
@@ -31,7 +33,7 @@ const textColors = ["text-green-700", "text-red-800", "text-slate-600"]
           formats={["avif", "webp"]}
           alt={`Hero image ${i + 1}`}
           loading={i === 0 ? "eager" : "lazy"}
-          class={` absolute top-0 right-0 w-full h-full lg:w-3/4 object-cover transition-opacity duration-1000 ease-in-out ${
+          class={` absolute top-0 right-0 w-full h-full aspect-square sm:aspect-video lg:w-3/4 object-cover transition-opacity duration-1000 ease-in-out ${
             i === 0 ? "opacity-100 z-1" : "opacity-0"
           }`}
           data-hero
@@ -57,12 +59,12 @@ const textColors = ["text-green-700", "text-red-800", "text-slate-600"]
   <div
     class="lg:absolute inset-0 lg:text-white lg:text-lg lg:w-3/4 flex items-center font-light z-50"
   >
-    <div class="flex flex-col lg:m-auto lg:w-1/2 lg:-translate-x-1/4 p-4">
+    <div class="flex flex-col lg:m-auto lg:w-1/2 lg:-translate-x-1/4">
       <h2
         id="hero-title"
-        class="font-serif text-4xl lg:text-white transition-colors duration-1000 ease-in-out text-emerald-700"
+        class="font-serif text-2xl lg:text-4xl lg:text-white transition-colors duration-1000 ease-in-out text-emerald-700"
       >
-        Architectural Elegance
+        Architectural Mastery
       </h2>
       <p class="lg:text-lg max-w-[600px] leading-loose">
         This is a paragraph. That has a lot of text...

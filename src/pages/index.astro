@@ -1,6 +1,9 @@
 ---
 import { Picture } from "astro:assets"
-import HeaderImage from "../images/sta_02.jpg"
+import image01 from "../images/sta_02.jpg"
+import image02 from "../images/civ_01.jpg"
+import image03 from "../images/res_07.jpg"
+
 import HeroBanner from "../components/homepage/HeroBanner.astro"
 import Welcome from "../components/Welcome.astro"
 import Layout from "../components/layout/Layout.astro"
@@ -14,35 +17,68 @@ import Layout from "../components/layout/Layout.astro"
   description="Architecture, Remodeling, Elevation and Renderings by Philip J. Rhea"
 >
   <HeroBanner />
-  <!-- <div class="w-full aspect-square md:aspect-video lg:max-h-[50vh] relative">
-    <Picture
-      src={HeaderImage}
-      widths={[400, 1000, 1600, 2500]}
-      sizes="100vw"
-      loading="eager"
-      alt="Philip J. Rhea"
-      formats={["avif", "webp"]}
-      class="w-full h-full object-cover"
-    />
-    <div
-      class="lg:absolute inset-0 lg:bg-gradient-to-r from-emerald-700/80 via-50% via-emerald-600/80 to-transparent lg:text-white lg:text-lg lg:w-3/4 flex items-center font-light"
-    >
-      <div class="flex flex-col m-auto lg:w-1/2 lg:-translate-x-1/4 p-4">
-        <h2 class="text-emerald-700 lg:text-white font-serif text-4xl">
-          This is a Header
-        </h2>
-        <p class="lg:text-lg max-w-[600px] leading-loose">
-          This is a paragraph. That has a lot of text. It is really long. You
-          can see it. It is a very long paragraph that goes on and on. It is so
-          long that it might never end. But it will end eventually. And when it
-          does, you will be able to read the rest of the content without any
-          issues. It is important to have long paragraphs sometimes, because it
-          helps to fill the space and make the content look more complete. It
-          also helps to keep the
-        </p>
+  <section
+    class="bg-stone-100 text-stone-700 min-h-screen flex justify-center items-center"
+  >
+    <div class="w-11/12 m-auto max-w-[1366px] flex flex-col py-20">
+      <h2 class="font-serif text-2xl lg:text-4xl">Past Projects</h2>
+      <p>description about past projects</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mt-10 gap-10">
+        <div class="flex flex-col">
+          <Picture
+            src={image01}
+            formats={["avif", "webp"]}
+            alt="portolio"
+            loading={"lazy"}
+            class="w-full h-full object-cover rounded-xl aspect-video lg:aspect-square border border-stone-400"
+          />
+          <h3 class="font-serif text-xl lg:text-2xl pt-4">Civic Designs</h3>
+          <p>description about civic architecture (what is it?)</p>
+        </div>
+        <div class="flex flex-col">
+          <Picture
+            src={image02}
+            formats={["avif", "webp"]}
+            alt="portolio"
+            loading={"lazy"}
+            class="w-full h-full object-cover rounded-xl aspect-video lg:aspect-square border border-stone-400"
+          />
+          <h3 class="font-serif text-xl lg:text-2xl pt-4">Religious Designs</h3>
+          <p>description about religious architecture (what is it?)</p>
+        </div>
+        <div class="flex flex-col">
+          <Picture
+            src={image03}
+            formats={["avif", "webp"]}
+            alt="portolio"
+            loading={"lazy"}
+            class="w-full h-full object-cover rounded-xl aspect-video lg:aspect-square border border-stone-400"
+          />
+          <h3 class="font-serif text-xl lg:text-2xl pt-4">
+            Residential Designs
+          </h3>
+          <p>
+            description about residential architecture (what is it?)
+            <br />
+            askjdasjkdhasd sad asd asd asd asd asdasd asdas dasd asd asda sdasdas
+            dasd asd asdasd asd asd asd asd asda sdasd asd asd asd asd asdasd asdas
+            dasd asd asda sdasdas dasd asd asdasd asd asd asd asd asda sdasd
+          </p>
+        </div>
+        <div class="flex flex-col">
+          <Picture
+            src={image02}
+            formats={["avif", "webp"]}
+            alt="portolio"
+            loading={"lazy"}
+            class="w-full h-full object-cover rounded-xl aspect-video lg:aspect-square border border-stone-400"
+          />
+          <h3 class="font-serif text-xl lg:text-2xl pt-4">Corporate Designs</h3>
+          <p>description about Corporate architecture (what is it?)</p>
+        </div>
       </div>
     </div>
-  </div> -->
+  </section>
   <button
     class="bg-blue-500 text-white p-2 rounded duration-200"
     data-state="on"
