@@ -19,11 +19,11 @@ import Layout from "../components/layout/Layout.astro"
 >
   <HeroBanner />
   <section
-    class="bg-stone-100 text-stone-700 min-h-screen flex justify-center items-center relative"
+    class="text-stone-700 min-h-screen flex justify-center items-center relative"
   >
     <div class="flex absolute inset-0 overflow-hidden items-center">
       <p
-        class="text-center font-pacioli text-[100vh] text-stone-200/50 -leading-[20rem]"
+        class="text-center font-pacioli text-[100vh] text-stone-50 -leading-[20rem]"
       >
         e
       </p>
@@ -153,30 +153,55 @@ import Layout from "../components/layout/Layout.astro"
       </p>
     </div>
   </section>
-  <button
-    class="bg-blue-500 text-white p-2 rounded duration-200"
-    data-state="on"
-    onclick="changeState(this)">Click Me</button
+  <section
+    class="bg-stone-100 py-10 min-h-screen flex flex-col items-center justify-center"
   >
+    <form action="/contact" method="POST" class="max-w-md mx-auto">
+      <h2 class="text-2xl font-semibold">Parley</h2>
+      <h3 class="text-lg mb-2">Start a conversation</h3>
+      <div class="mb-4">
+        <label for="name" class="block text-sm font-medium text-gray-700"
+          >Name</label
+        >
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="mt-1 p-2 w-full border border-gray-300 rounded-md"
+        />
+      </div>
+      <button
+        type="submit"
+        class="border-2 border-stone-400 rounded-lg p-3 text-stone-400 uppercase"
+      >
+        Send Message
+      </button>
+    </form>
+  </section>
+  <!-- <button
+      class="border-2 border-sto text-white p-2 rounded duration-200"
+      data-state="on"
+      onclick="changeState(this)">Click Me</button
+    >
 
-  <button
-    class="bg-blue-500 text-white p-2 rounded duration-200"
-    data-state="on"
-    onclick="changeState(this)">Click Me 2</button
-  >
+    <button
+      class="bg-blue-500 text-white p-2 rounded duration-200"
+      data-state="on"
+      onclick="changeState(this)">Click Me 2</button
+    >
 
-  <button
-    class="bg-blue-500 text-white p-2 rounded duration-200"
-    data-state="on"
-    onclick="changeState(this)">Click Me 3</button
-  >
-  <script is:inline>
-    function changeState(button) {
-      const state = button.getAttribute("data-state")
-      button.setAttribute("data-state", state === "on" ? "off" : "on")
-      button.innerHTML = state === "on" ? "Turn Off" : "Turn On"
-      button.classList.toggle("bg-blue-500")
-      button.classList.toggle("bg-red-500")
-    }
-  </script>
+    <button
+      class="bg-blue-500 text-white p-2 rounded duration-200"
+      data-state="on"
+      onclick="changeState(this)">Click Me 3</button
+    >
+    <script is:inline>
+      function changeState(button) {
+        const state = button.getAttribute("data-state")
+        button.setAttribute("data-state", state === "on" ? "off" : "on")
+        button.innerHTML = state === "on" ? "Turn Off" : "Turn On"
+        button.classList.toggle("bg-blue-500")
+        button.classList.toggle("bg-red-500")
+      }
+    </script> -->
 </Layout>
