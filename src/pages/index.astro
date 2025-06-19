@@ -3,7 +3,8 @@ import { Picture } from "astro:assets"
 import image01 from "../images/sta_02.jpg"
 import image02 from "../images/civ_01.jpg"
 import image03 from "../images/res_07.jpg"
-
+import philipStudents from "../images/philip-rhea-archtiect.jpg"
+import philipWork from "../images/philip-rhea-architecture.jpg"
 import HeroBanner from "../components/homepage/HeroBanner.astro"
 import Welcome from "../components/Welcome.astro"
 import Layout from "../components/layout/Layout.astro"
@@ -20,8 +21,12 @@ import Layout from "../components/layout/Layout.astro"
   <section
     class="bg-stone-100 text-stone-700 min-h-screen flex justify-center items-center relative"
   >
-    <div class="absolute inset-0 overflow-hidden flex items-center">
-      <p class="font-pacioli text-[110vh] -translate-x-1/8 text-stone-200">p</p>
+    <div class="flex absolute inset-0 overflow-hidden items-center">
+      <p
+        class="text-center font-pacioli text-[100vh] text-stone-200/50 -leading-[20rem]"
+      >
+        e
+      </p>
     </div>
     <div class="w-11/12 m-auto max-w-[1366px] flex flex-col py-20 z-1">
       <h2 class="text-2xl lg:text-4xl">Past Projects</h2>
@@ -78,6 +83,74 @@ import Layout from "../components/layout/Layout.astro"
           <p>description about Institutional architecture (what is it?)</p>
         </div>
       </div>
+    </div>
+  </section>
+  <section
+    class="overflow-x-hidden min-h-screen flex flex-col lg:flex-row items-center justify-center gap-x-10 px-5 py-10"
+  >
+    <div class="relative">
+      <div
+        class="absolute top-0 left-0 w-full border aspect-square -rotate-6 border-stone-200 -z-0 rounded-xl max-w-screen"
+      >
+      </div><div
+        class="absolute top-0 left-0 w-full border aspect-square -rotate-3 border-stone-300 -z-0 rounded-xl max-w-screen"
+      >
+      </div><div
+        class="absolute top-0 left-0 w-full border aspect-square -rotate-1 border-stone-400 -z-0 rounded-xl max-w-screen"
+      >
+      </div>
+
+      <Picture
+        src={philipStudents}
+        formats={["avif", "webp"]}
+        alt="Phil Rhea"
+        loading={"lazy"}
+        class="w-full h-full max-w-[800px] object-cover rounded-xl aspect-square"
+      />
+      <Picture
+        src={philipWork}
+        formats={["avif", "webp"]}
+        alt="Phil Rhea"
+        loading={"lazy"}
+        class="hidden xl:flex absolute max-w-[200px] 2xl:max-w-[300px] object-cover rounded-xl xl:-bottom-[10%] xl:-left-[10%] aspect-square shadow-2xl"
+      />
+    </div>
+    <div class="w-full max-w-[800px] leading-loose mt-10 lg:mt-0">
+      <p class="text-xl flex flex-row items-center">
+        <span
+          class="font-pacioli text-5xl text-[#D3AF37] tracking-[-1rem]"
+          aria-label="Philip">p</span
+        >
+      </p>
+      <p class="indent-16 -translate-y-8">
+        <span class="font-trajan text-2xl text-[#D3AF37]" aria-label="John Rhea"
+          >hilip J. Rhea</span
+        > is a native Floridian who attended a Catholic private high school in St.
+        Mary's, KS and then spent two years at a seminary in Minnesota discerning
+        his vocation. During that time he had the opportunity to travel through Italy,
+        Switzerland and France. He fell in love with art and architecture and resolved
+        to pursue a career in that field.<br /><br /> Philip began his architectural
+        education at a community college, worked for an architect in Orlando for
+        a year and then transferred to the University of Florida where he earned
+        a Bachelor of Science in Architecture. In order to maintain a balanced architectural
+        diet, he minored in Urban Regional Planning, became an active member in the
+        Institute of Classical Architecture & Art, joined the TradArch list, studied
+        Historic Preservation, and built a good library. Because of his experiences
+        with modernist architecture and philosophy, he resolved to dedicate all of
+        his efforts to traditional architecture rooted in the perennial philosophies
+        that uphold the true, the beautiful and the good. From then on, all roads
+        led to the University of Notre Dame. He has completed a Masters in Architecture
+        with a concentration in Classical Architecture - Deo Gratias!<br /><br
+        /> Philip has successfully completed the NCARB test requirements and has
+        received an architectural license in the State of Florida. He has worked
+        in Seaside and Miami, FL and has recently relocated to Jacksonville.
+        <br /><br />Philip loves all outdoor activities, will play any sport,
+        and enjoys working on cars. He was a member of the Collegium Musicum at
+        Notre Dame and is currently the choir director of sacred music at the
+        church he attends. He is married to a wonderful young lady who could not
+        encourage him more in his interests and desires for everything
+        beautiful. They currently have six children.
+      </p>
     </div>
   </section>
   <button
