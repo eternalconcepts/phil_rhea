@@ -42,7 +42,7 @@ const {
             >
           </h1></a
         >
-        <ul id="menuLinks" class="hidden lg:flex gap-4">
+        <ul id="menuLinks" class="fixed lg:static lg:flex duration-500 gap-4">
           <li><a href="/contact" class="hover:underline">Profile</a></li>
           <li><a href="/about" class="hover:underline">Philosophy</a></li>
           <li><a href="/contact" class="hover:underline">Portfolio</a></li>
@@ -61,7 +61,7 @@ const {
     <main class={"w-screen overflow-hidden h-full min-h-[calc(100vh-8rem)] "}>
       <div
         id="pageContent"
-        class="duration-500 ease-[cubic-bezier(1,-0.13,.17,1.18)] h-screen overflow-auto relative origin-top-right pt-16"
+        class="duration-500 ease-[cubic-bezier(1,-0.13,.17,1.18)] h-screen overflow-auto relative origin-top-left pt-16"
       >
         <slot />
         <footer class="bg-gray-800 text-white text-center p-4 w-full h-16">
@@ -108,10 +108,10 @@ const {
     <script is:inline>
       function burgerMenu(button) {
         // flip the button’s data-state
-        const prev = button.getAttribute("data-state")
-        const next = prev === "on" ? "off" : "on"
-        button.setAttribute("data-state", next)
-        button.textContent = next === "on" ? "Turn Off" : "Turn On"
+        const menuOn = button.getAttribute("data-state")
+        const menuBtn = menuOn === "on" ? "off" : "on"
+        button.setAttribute("data-state", menuBtn)
+        button.textContent = menuBtn === "on" ? "Turn Off" : "Turn On"
 
         // swap button colors
         button.classList.toggle("bg-blue-500")
@@ -137,10 +137,10 @@ const {
           "shadow-xl",
           "rounded-2xl",
           "overflow-hidden",
-          "translate-x-[20%]",
+          "-translate-x-[20%]",
           "translate-y-[25%]",
         ]
-        if (next === "on") {
+        if (menuBtn === "on") {
           main.classList.remove(...closedMenu)
           main.classList.add(...openMenu)
         } else {
@@ -148,6 +148,34 @@ const {
           main.classList.add(...closedMenu)
           setTimeout(() => {
             main.classList.remove("w-screen")
+          }, 300)
+        }
+
+        const links = document.getElementById("menuLinks")
+
+        // display the menu links
+        const menuLinksOn = [
+          "translate-x-[100vw]",
+          "fixed",
+          "top-16",
+          "right-0",
+          "z-[1000]",
+        ]
+        const menuLinksOff = [
+          "-translate-x-[40vw]",
+          "fixed",
+          "top-16",
+          "right-0",
+          "z-[1000]",
+        ]
+        if (menuBtn === "off") {
+          links.classList.remove(...menuLinksOff)
+          links.classList.add(...menuLinksOn)
+        } else {
+          links.classList.remove(...menuLinksOn)
+          links.classList.add(...menuLinksOff)
+          setTimeout(() => {
+            links.classList.remove("")
           }, 300)
         }
       }
