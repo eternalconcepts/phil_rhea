@@ -1,3 +1,4 @@
+// strapi.js file
 /**
  * Fetches data from the Strapi API
  * @param endpoint - The endpoint to fetch from
