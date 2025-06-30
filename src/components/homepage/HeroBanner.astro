@@ -6,6 +6,8 @@ import image01 from "../../images/sta_02.jpg"
 import image02 from "../../images/civ_01.jpg"
 import image03 from "../../images/res_07.jpg"
 
+const CDN_URL = import.meta.env.CDN_URL || "http://localhost:1337"
+
 const defaultImages = [image01, image02, image03]
 const heroColors = [
   "from-green-700 via-green-700 ",
@@ -27,7 +29,6 @@ const description =
   homePageData?.herobanner.description ||
   "Welcome to Eternal Concepts, where we bring your architectural visions to life. Traditional craftsmanship meets modern design. Design, remodel, and elevate your spaces with us."
 const imagesData = homePageData?.herobanner?.heroSlides || []
-console.log("imagesData", imagesData)
 
 const images = imagesData.map((img) => ({
   color: img.slide_color,
@@ -45,20 +46,37 @@ const images = imagesData.map((img) => ({
     class="relative aspect-square sm:aspect-video w-full h-full object-cover overflow-hidden"
   >
     {
-      images.map((image, i) => (
-        <Picture
-          src={image.url}
-          width={image.width}
-          height={image.height}
-          formats={["avif", "webp"]}
-          alt={`Hero image ${i + 1}`}
-          loading={i === 0 ? "eager" : "lazy"}
-          class={` absolute top-0 right-0 w-full h-full aspect-square sm:aspect-video lg:w-3/4 object-cover transition-opacity duration-1000 ease-in-out ${
-            i === 0 ? "opacity-100 z-1" : "opacity-0"
-          }`}
-          data-hero
-        />
-      ))
+      images.map((image, i) => {
+        const s1 = image.formats?.thumbnail
+        const s2 = image.formats?.small
+        const s3 = image.formats?.medium
+        const s4 = image.formats?.large
+        const srcSet = [
+          s1 ? `${CDN_URL}${s1.url} ${s1.width}w` : "",
+          s2 ? `${CDN_URL}${s2.url} ${s2.width}w` : "",
+          s3 ? `${CDN_URL}${s3.url} ${s3.width}w` : "",
+          s4 ? `${CDN_URL}${s4.url} ${s4.width}w` : "",
+        ]
+          .filter(Boolean)
+          .join(", ")
+        return (
+          <img
+            src={CDN_URL + image.url}
+            width={image.width}
+            height={image.height}
+            srcset={srcSet}
+            sizes={"100vw"}
+            alt={`Hero image ${i + 1}`}
+            loading={i === 0 ? "eager" : "lazy"}
+            decoding={i === 0 ? "sync" : "async"}
+            fetchpriority={i === 0 ? "high" : "low"}
+            class={` absolute top-0 right-0 w-full h-full aspect-square sm:aspect-video lg:w-3/4 object-cover transition-opacity duration-1000 ease-in-out ${
+              i === 0 ? "opacity-100 z-1" : "opacity-0"
+            }`}
+            data-hero
+          />
+        )
+      })
     }
     <div
       class="hidden lg:block lg:absolute top-0 right-0 w-full h-full lg:w-3/4 z-10 bg-gradient-to-r from-white to-transparent to-30%"
@@ -87,11 +105,11 @@ const images = imagesData.map((img) => ({
         {title}
       </h2>
       <p class="lg:text-lg max-w-[600px] leading-loose">
+        {CDN_URL}
         {description}
       </p>
     </div>
   </div>
-  <p>{JSON.stringify(images)} IMAGES:</p>
 </div>
 
 <script type="module">
