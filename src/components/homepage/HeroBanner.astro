@@ -24,6 +24,7 @@ const homePageData = await fetchApi({
   wrappedByKey: "data",
   query: { populate: "herobanner.heroSlides.slide_image" },
 })
+
 const title = homePageData?.herobanner.title || "Eternal Concepts"
 const description =
   homePageData?.herobanner.description ||
