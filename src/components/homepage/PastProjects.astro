@@ -3,7 +3,7 @@ import { Picture } from "astro:assets"
 import fetchApi from "../../lib/strapi"
 import { imageConfig } from "astro:assets"
 
-const STRAPI_URL = import.meta.env.STRAPI_URL || ""
+const CDN_URL = import.meta.env.CDN_URL || ""
 
 const json = await fetchApi({
   endpoint: "home-page",
@@ -51,13 +51,13 @@ const projectCards = page.projectCard ?? []
             // 4) Build a srcset exactly like your hero slider did
             const srcSet = [thumbnail, small, medium, large]
               .filter((f) => f?.url)
-              .map((f) => `${STRAPI_URL}${f.url} ${f.width}w`)
+              .map((f) => `${CDN_URL}${f.url} ${f.width}w`)
               .join(", ")
 
             return (
-              <div class="flex flex-col" key={card.id}>
+              <div class="grid grid-rows-[1fr_1fr_auto]" key={card.id}>
                 <img
-                  src={`${STRAPI_URL}${url}`}
+                  src={`${CDN_URL}${url}`}
                   width={width}
                   height={height}
                   srcset={srcSet}

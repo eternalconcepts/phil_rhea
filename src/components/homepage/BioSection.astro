@@ -2,7 +2,7 @@
 import { Picture } from "astro:assets"
 import fetchApi from "../../lib/strapi"
 
-const STRAPI_URL = import.meta.env.STRAPI_URL || ""
+const CDN_URL = import.meta.env.CDN_URL || ""
 
 // 1) fetch home-page, but only grab the two bio images
 const { data: page } = await fetchApi({
@@ -49,7 +49,7 @@ const images = [page.bioImgMain, page.bioImgSecond]
         const srcSet = ["thumbnail", "small", "medium", "large"]
           .map((k) => {
             const f = image.formats?.[k]
-            return f ? `${STRAPI_URL}${f.url} ${f.width}w` : ""
+            return f ? `${CDN_URL}${f.url} ${f.width}w` : ""
           })
           .filter(Boolean)
           .join(", ")
@@ -63,7 +63,7 @@ const images = [page.bioImgMain, page.bioImgSecond]
         return (
           <Picture
             key={image.id}
-            src={`${STRAPI_URL}${image.url}`}
+            src={`${CDN_URL}${image.url}`}
             width={image.width}
             height={image.height}
             srcset={srcSet}
