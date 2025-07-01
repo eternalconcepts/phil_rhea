@@ -1,0 +1,95 @@
+---
+import { Picture } from "astro:assets"
+import fetchApi from "../../lib/strapi"
+
+const STRAPI_URL = import.meta.env.STRAPI_URL || ""
+
+// 1) fetch home-page, but only grab the two bio images
+const { data: page } = await fetchApi({
+  endpoint: "home-page",
+  query: {
+    populate: "*",
+  },
+})
+
+// 2) turn the two separate fields into one array
+const images = [page.bioImgMain, page.bioImgSecond]
+  .filter(Boolean) // in case one is missing
+  .map((img) => ({
+    id: img.id,
+    url: img.url,
+    width: img.width,
+    height: img.height,
+    formats: img.formats, // thumbnail / small / medium / large
+  }))
+---
+
+<section
+  class="overflow-x-hidden min-h-screen flex flex-col lg:flex-row items-center justify-center gap-x-10 px-5 py-10"
+>
+  <div class="relative">
+    {/* background frames */}
+    <div
+      class="absolute top-0 left-0 w-full border aspect-square -rotate-6 border-stone-200 -z-0 rounded-xl"
+    >
+    </div>
+    <div
+      class="absolute top-0 left-0 w-full border aspect-square -rotate-3 border-stone-300 -z-0 rounded-xl"
+    >
+    </div>
+    <div
+      class="absolute top-0 left-0 w-full border aspect-square -rotate-1 border-stone-400 -z-0 rounded-xl"
+    >
+    </div>
+
+    {/* 3) map through your two Strapi images */}
+    {
+      images.map((image, i) => {
+        // build srcset from formats just like your hero slider
+        const srcSet = ["thumbnail", "small", "medium", "large"]
+          .map((k) => {
+            const f = image.formats?.[k]
+            return f ? `${STRAPI_URL}${f.url} ${f.width}w` : ""
+          })
+          .filter(Boolean)
+          .join(", ")
+
+        // choose classes per image (first is main, second is accent)
+        const cls =
+          i === 0
+            ? "w-full h-full max-w-[800px] object-cover rounded-xl aspect-square"
+            : "hidden xl:flex absolute max-w-[200px] 2xl:max-w-[300px] object-cover rounded-xl xl:-bottom-[10%] xl:-left-[10%] shadow-2xl aspect-square"
+
+        return (
+          <Picture
+            key={image.id}
+            src={`${STRAPI_URL}${image.url}`}
+            width={image.width}
+            height={image.height}
+            srcset={srcSet}
+            sizes={i === 0 ? "100vw" : "200px"}
+            loading="lazy"
+            alt={i === 0 ? "Phil Rhea" : "Phil Rhea at work"}
+            class={cls}
+          />
+        )
+      })
+    }
+  </div>
+
+  <div class="w-full max-w-[800px] leading-loose mt-10 lg:mt-0">
+    <p class="text-xl flex items-center">
+      <span
+        class="font-pacioli text-5xl text-[#D3AF37] tracking-[-1rem]"
+        aria-label="Philip">p</span
+      >
+    </p>
+    <p class="indent-16 -translate-y-8">
+      <span
+        class="font-trajan text-2xl text-[#D3AF37]"
+        aria-label="Philip J. Rhea">hilip J. Rhea</span
+      >
+      {page.Biography}
+    </p>
+  </div>
+</section>

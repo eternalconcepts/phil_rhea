@@ -1,0 +1,79 @@
+---
+import { Picture } from "astro:assets"
+import fetchApi from "../../lib/strapi"
+import { imageConfig } from "astro:assets"
+
+const STRAPI_URL = import.meta.env.STRAPI_URL || ""
+
+const json = await fetchApi({
+  endpoint: "home-page",
+  query: {
+    populate: "projectCard.categoryImg",
+  },
+})
+const imagesData = json?.projectCard?.categoryImg || []
+
+const images = imagesData.map((img) => ({
+  url: img.categoryImg?.url,
+  width: img.categoryImg?.width,
+  height: img.categoryImg?.height,
+  formats: img.categoryImg?.formats,
+}))
+
+const page = json.data
+
+const projectCards = page.projectCard ?? []
+---
+
+<section
+  class="text-stone-700 min-h-screen flex justify-center items-center relative"
+>
+  <div
+    class="flex absolute inset-0 overflow-hidden items-center text-center font-pacioli text-[100vh] text-stone-50 -leading-[20rem]"
+  >
+    e
+  </div>
+  <div class="w-11/12 m-auto max-w-[1366px] flex flex-col py-20 z-1">
+    <h2 class="text-2xl lg:text-4xl">Past Projects</h2>
+    <p class="mt-2">description about past projects</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mt-10">
+      {
+        projectCards.length === 0 ? (
+          <p class="col-span-full text-center text-red-500">
+            No projects found – check your Strapi data!
+          </p>
+        ) : (
+          projectCards.map((card) => {
+            // 3) Destructure your image and formats
+            const { url, width, height, formats = {} } = card.categoryImg
+            const { thumbnail, small, medium, large } = formats
+
+            // 4) Build a srcset exactly like your hero slider did
+            const srcSet = [thumbnail, small, medium, large]
+              .filter((f) => f?.url)
+              .map((f) => `${STRAPI_URL}${f.url} ${f.width}w`)
+              .join(", ")
+
+            return (
+              <div class="flex flex-col" key={card.id}>
+                <img
+                  src={`${STRAPI_URL}${url}`}
+                  width={width}
+                  height={height}
+                  srcset={srcSet}
+                  sizes="(min-width:1024px)25vw,50vw"
+                  alt={card.categoryTitle}
+                  loading="lazy"
+                  decoding="async"
+                  class="w-full h-full object-cover rounded-xl aspect-video lg:aspect-square border border-stone-400 transition-opacity duration-500 ease-in-out"
+                />
+                <h3 class="text-xl lg:text-2xl pt-4">{card.categoryTitle}</h3>
+                <p class="mt-2">{card.categoryDesc}</p>
+              </div>
+            )
+          })
+        )
+      }
+    </div>
+  </div>
+</section>
