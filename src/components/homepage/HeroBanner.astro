@@ -16,8 +16,6 @@ const hexToRgba = (hex, a) => {
   return `rgba(${r}, ${g}, ${b}, ${a})`
 }
 
-const defaultImages = [image01, image02, image03]
-
 const homePageData = await fetchApi({
   endpoint: "home-page",
   wrappedByKey: "data",
@@ -92,6 +90,7 @@ console.log("images", images)
             i === 0 ? "opacity-100 z-30" : " opacity-0 z-20 "
           }`}
           data-hero-bg
+          data-color={hexToRgba(image.color, 1)}
           style={{
             "--tw-gradient-from": hexToRgba(image.color, 1),
             "--tw-gradient-via": hexToRgba(image.color, 0.7),
@@ -107,7 +106,11 @@ console.log("images", images)
     <div class="flex flex-col lg:m-auto lg:w-1/2 lg:-translate-x-1/4">
       <h2
         id="hero-title"
-        class="font-trajan text-2xl lg:text-4xl lg:text-white transition-colors duration-1000 ease-in-out text-emerald-700"
+        class="font-trajan
+       text-2xl lg:text-4xl
+       text-[var(--hero-text-color)]
+       lg:text-white
+       duration-1000 ease-in-out"
       >
         {title}
       </h2>
@@ -118,7 +121,39 @@ console.log("images", images)
     </div>
   </div>
 </div>
+<script type="module">
+  const delay = 5000
+  const images = document.querySelectorAll("[data-hero]")
+  const backgrounds = document.querySelectorAll("[data-hero-bg]")
+  const heroTitle = document.getElementById("hero-title")
 
+  // pull the colors out of your data-color attrs
+  const slideColors = Array.from(backgrounds).map((bg) =>
+    bg.getAttribute("data-color")
+  )
+
+  let current = 0
+  // initialize the CSS var
+  heroTitle.style.setProperty("--hero-text-color", slideColors[0])
+
+  setInterval(() => {
+    // hide current slide
+    images[current].classList.replace("opacity-100", "opacity-0")
+    backgrounds[current].classList.replace("opacity-100", "opacity-0")
+
+    // advance
+    current = (current + 1) % images.length
+
+    // show next slide
+    images[current].classList.replace("opacity-0", "opacity-100")
+    backgrounds[current].classList.replace("opacity-0", "opacity-100")
+
+    // update the CSS var for text color
+    heroTitle.style.setProperty("--hero-text-color", slideColors[current])
+  }, delay)
+</script>
+
+<!-- 
 <script type="module">
   const delay = 5000
   const images = document.querySelectorAll("[data-hero]")
@@ -150,4 +185,4 @@ console.log("images", images)
     // Add new text color
     heroTitle.classList.add(textColors[current])
   }, delay)
-</script>
+</script> -->
