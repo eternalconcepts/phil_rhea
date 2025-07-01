@@ -38,34 +38,5 @@ export default async function fetchApi({
     data = data[0]
   }
 
-  // ─── POST-PROCESS ALL MEDIA URLS ───────────────────────────────────────────
-  // if you ever want to switch to serving from a CDN, just set MEDIA_URL
-  const MEDIA_BASE = (
-    import.meta.env.MEDIA_URL || import.meta.env.STRAPI_URL
-  ).replace(/\/$/, "")
-
-  function fixUrls(obj) {
-    if (obj == null || typeof obj !== "object") return obj
-    if (Array.isArray(obj)) return obj.map(fixUrls)
-
-    const out = {}
-    for (const [k, v] of Object.entries(obj)) {
-      if (k === "url" && typeof v === "string") {
-        // strip any existing protocol://host
-        const path = v.replace(/^https?:\/\/[^\/]+/, "")
-        // now prefix exactly once
-        out[k] = path.startsWith("/")
-          ? MEDIA_BASE + path
-          : MEDIA_BASE + "/" + path
-      } else {
-        out[k] = fixUrls(v)
-      }
-    }
-    return out
-  }
-
-  data = fixUrls(data)
-  // ──────────────────────────────────────────────────────────────────────────
-
   return data
 }
