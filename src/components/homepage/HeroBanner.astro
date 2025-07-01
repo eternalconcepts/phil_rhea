@@ -30,6 +30,7 @@ const description =
   homePageData?.herobanner.description ||
   "Welcome to Eternal Concepts, where we bring your architectural visions to life. Traditional craftsmanship meets modern design. Design, remodel, and elevate your spaces with us."
 const imagesData = homePageData?.herobanner?.heroSlides || []
+console.log("homePageData", homePageData)
 
 const images = imagesData.map((img) => ({
   color: img.slide_color,
@@ -38,6 +39,7 @@ const images = imagesData.map((img) => ({
   height: img.slide_image?.height,
   formats: img.slide_image?.formats,
 }))
+console.log("images", images)
 ---
 
 <div
