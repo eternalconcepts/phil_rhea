@@ -3,7 +3,7 @@ import { Picture } from "astro:assets"
 import fetchApi from "../../lib/strapi"
 import { imageConfig } from "astro:assets"
 
-const CDN_URL = import.meta.env.CDN_URL || ""
+const STRAPI_URL = import.meta.env.STRAPI_URL || ""
 
 const json = await fetchApi({
   endpoint: "home-page",
@@ -51,13 +51,13 @@ const projectCards = page.projectCard ?? []
             // 4) Build a srcset exactly like your hero slider did
             const srcSet = [thumbnail, small, medium, large]
               .filter((f) => f?.url)
-              .map((f) => `${CDN_URL}${f.url} ${f.width}w`)
+              .map((f) => `${STRAPI_URL}${f.url} ${f.width}w`)
               .join(", ")
 
             return (
-              <div class="grid grid-rows-[1fr_1fr_auto]" key={card.id}>
+              <div class="grid grid-rows-[auto_auto_1fr]" key={card.id}>
                 <img
-                  src={`${CDN_URL}${url}`}
+                  src={`${STRAPI_URL}${url}`}
                   width={width}
                   height={height}
                   srcset={srcSet}
@@ -67,8 +67,8 @@ const projectCards = page.projectCard ?? []
                   decoding="async"
                   class="w-full h-full object-cover rounded-xl aspect-video lg:aspect-square border border-stone-400 transition-opacity duration-500 ease-in-out"
                 />
-                <h3 class="text-xl lg:text-2xl pt-4">{card.categoryTitle}</h3>
-                <p class="mt-2">{card.categoryDesc}</p>
+                <h3 class="text-xl lg:text-2xl pt-4 ">{card.categoryTitle}</h3>
+                <p class="mt-2 h-full flex align-top">{card.categoryDesc}</p>
               </div>
             )
           })
