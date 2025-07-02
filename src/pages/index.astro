@@ -11,7 +11,7 @@ import Layout from "../components/layout/Layout.astro"
 import PastProjects from "../components/homepage/PastProjects.astro"
 import BioSection from "../components/homepage/BioSection.astro"
 import Testimonials from "../components/homepage/Testimonials.astro"
-import TestimonialsSlider from "../components/homepage/TestimonialsSlider.astro"
+import TestimonialsCarousel from "../components/homepage/TestimonialsCarousel.astro"
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
@@ -24,8 +24,16 @@ import TestimonialsSlider from "../components/homepage/TestimonialsSlider.astro"
   <HeroBanner />
   <PastProjects />
   <BioSection />
-  <TestimonialsSlider />
-
+  <section
+    class="w-11/12 m-auto max-w-[1200px] flex flex-col items-center justify-center py-20"
+  >
+    <h2 class="text-2xl">Testimonials</h2>
+    <p>
+      The best part of my work is the complacency and the appreciation of
+      clients.
+    </p>
+    <TestimonialsCarousel />
+  </section>
   <section
     class="bg-stone-100 py-10 min-h-screen flex flex-col items-center justify-center"
   >
