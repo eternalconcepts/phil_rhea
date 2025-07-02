@@ -151,37 +151,3 @@ console.log("images", images)
     heroTitle.style.setProperty("--hero-text-color", slideColors[current])
   }, delay)
 </script>
-
-<!-- 
-<script type="module">
-  const delay = 5000
-  const images = document.querySelectorAll("[data-hero]")
-  const backgrounds = document.querySelectorAll("[data-hero-bg]")
-  const heroTitle = document.getElementById("hero-title")
-
-  const textColors = ["text-green-700", "text-red-800", "text-slate-600"]
-  let current = 0
-
-  setInterval(() => {
-    // Hide current image and background
-    images[current].classList.remove("opacity-100", "z-10")
-    images[current].classList.add("opacity-0")
-    backgrounds[current].classList.remove("opacity-100", "z-10")
-    backgrounds[current].classList.add("opacity-0")
-
-    // Remove current text color
-    heroTitle.classList.remove(textColors[current])
-
-    // Move to next
-    current = (current + 1) % images.length
-
-    // Show next image and background
-    images[current].classList.remove("opacity-0")
-    images[current].classList.add("opacity-100", "z-10")
-    backgrounds[current].classList.remove("opacity-0")
-    backgrounds[current].classList.add("opacity-100", "z-10")
-
-    // Add new text color
-    heroTitle.classList.add(textColors[current])
-  }, delay)
-</script> -->
