@@ -6,7 +6,7 @@ import image01 from "../../images/sta_02.jpg"
 import image02 from "../../images/civ_01.jpg"
 import image03 from "../../images/res_07.jpg"
 
-const STRAPI_URL = import.meta.env.STRAPI_URL || ""
+const CDN_URL = import.meta.env.CDN_URL || ""
 
 const hexToRgba = (hex, a) => {
   const r = parseInt(hex.slice(1, 3), 16)
@@ -52,16 +52,16 @@ console.log("images", images)
         const s3 = image.formats?.medium
         const s4 = image.formats?.large
         const srcSet = [
-          s1 ? `${STRAPI_URL}${s1.url} ${s1.width}w` : "",
-          s2 ? `${STRAPI_URL}${s2.url} ${s2.width}w` : "",
-          s3 ? `${STRAPI_URL}${s3.url} ${s3.width}w` : "",
-          s4 ? `${STRAPI_URL}${s4.url} ${s4.width}w` : "",
+          s1 ? `${CDN_URL}${s1.url} ${s1.width}w` : "",
+          s2 ? `${CDN_URL}${s2.url} ${s2.width}w` : "",
+          s3 ? `${CDN_URL}${s3.url} ${s3.width}w` : "",
+          s4 ? `${CDN_URL}${s4.url} ${s4.width}w` : "",
         ]
           .filter(Boolean)
           .join(", ")
         return (
           <img
-            src={STRAPI_URL + image.url}
+            src={CDN_URL + image.url}
             width={image.width}
             height={image.height}
             srcset={srcSet}
