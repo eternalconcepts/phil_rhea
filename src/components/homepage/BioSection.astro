@@ -1,6 +1,7 @@
 ---
 import { Picture } from "astro:assets"
 import fetchApi from "../../lib/strapi"
+import ColumnIcon from "./ColumnIcon.astro"
 
 const CDN_URL = import.meta.env.CDN_URL || ""
 
@@ -25,9 +26,11 @@ const images = [page.bioImgMain, page.bioImgSecond]
 ---
 
 <section
-  class="overflow-x-hidden min-h-screen flex flex-col lg:flex-row items-center justify-center gap-x-10 px-5 py-10"
+  class="overflow-x-hidden min-h-screen border-y-2 border-[#d3bd79] flex flex-col lg:flex-row items-center justify-center px-5 py-10 relative bg-amber-50/50"
 >
-  <div class="relative">
+  <ColumnIcon />
+  <ColumnIcon class="right-0 translate-x-[50%]" />
+  <div class="relative w-11/12 max-w-[800px]">
     {/* background frames */}
     <div
       class="absolute top-0 left-0 w-full border aspect-square -rotate-6 border-stone-200 -z-0 rounded-xl"
@@ -84,7 +87,7 @@ const images = [page.bioImgMain, page.bioImgSecond]
         aria-label="Philip">p</span
       >
     </p>
-    <p class="indent-16 -translate-y-8">
+    <p class="indent-16 -translate-y-8 px-2">
       <span
         class="font-trajan text-2xl text-[#D3AF37]"
         aria-label="Philip J. Rhea">hilip J. Rhea</span
