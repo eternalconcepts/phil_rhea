@@ -40,3 +40,39 @@ html {
 .image-slide {
   @apply absolute inset-0 opacity-0;
 }
+/* start hidden & shifted left */
+#menuLinks li {
+  @apply opacity-0 lg:opacity-100;
+  transform: translateX(4rem);
+  transition: transform 300ms ease, opacity 300ms ease;
+  transition-delay: 0;
+}
+
+/* on open: slide in, with delays */
+#menuLinks.links-open li {
+  opacity: 1;
+  transform: translateX(0);
+}
+#menuLinks.links-open li:nth-child(1) {
+  transition-delay: 150ms;
+}
+#menuLinks.links-open li:nth-child(2) {
+  transition-delay: 300ms;
+}
+#menuLinks.links-open li:nth-child(3) {
+  transition-delay: 450ms;
+}
+#menuLinks.links-open li:nth-child(4) {
+  transition-delay: 600ms;
+}
+#menuLinks.links-open li:nth-child(5) {
+  transition-delay: 750ms;
+}
+#menuLinks.links-open li:nth-child(6) {
+  transition-delay: 900ms;
+}
+
+/* on close: zero delay so they all fade at once */
+#menuLinks:not(.links-open) li {
+  transition-delay: 0 !important;
+}
