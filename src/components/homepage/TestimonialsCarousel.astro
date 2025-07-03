@@ -11,13 +11,12 @@ if (error) console.error("Strapi error:", error)
 const testimonials = page?.Testimonials || []
 ---
 
-<div id="carousel" class="relative mx-auto w-full">
+<div class="relative mx-auto w-full carousel">
   <!-- 1) GRID track: each slide is 100%/per-view via grid-auto-columns -->
   <div
-    id="carousel-wrapper"
-    class="overflow-x-auto scrollbar-track-transparent scrollbar-thumb-transparent w-full scroll-smooth"
+    class="overflow-x-auto scrollbar-track-transparent scrollbar-thumb-transparent w-full scroll-smooth carousel-wrapper"
   >
-    <div id="carousel-track" class="gap-5 grid grid-flow-col">
+    <div class="gap-5 grid grid-flow-col carousel-track">
       {
         testimonials.map((t, i) => (
           <TestimonialsCard
@@ -32,8 +31,7 @@ const testimonials = page?.Testimonials || []
 
   <!-- prev/next -->
   <button
-    id="carousel-prev"
-    class="absolute top-1/2 left-2 -translate-y-1/2 bg-white rounded-full border-2 lg:border-stone-400 lg:text-stone-400 hover:border-rose-600 hover:text-rose-600 border-rose-600 text-rose-600 duration-200"
+    class="absolute top-1/2 left-2 -translate-y-1/2 bg-white rounded-full border-2 lg:border-stone-400 lg:text-stone-400 hover:border-rose-600 hover:text-rose-600 border-rose-600 text-rose-600 duration-200 carousel-prev"
     style="display:none"
     aria-label="Previous slide"
   >
@@ -49,8 +47,7 @@ const testimonials = page?.Testimonials || []
   </button>
 
   <button
-    id="carousel-next"
-    class="absolute top-1/2 right-2 -translate-y-1/2 bg-white rounded-full border-2 lg:border-stone-400 lg:text-stone-400 hover:border-rose-600 hover:text-rose-600 border-rose-600 text-rose-600 duration-200"
+    class="absolute top-1/2 right-2 -translate-y-1/2 bg-white rounded-full border-2 lg:border-stone-400 lg:text-stone-400 hover:border-rose-600 hover:text-rose-600 border-rose-600 text-rose-600 duration-200 carousel-next"
     style="display:none"
     aria-label="Next slide"
   >
@@ -66,14 +63,19 @@ const testimonials = page?.Testimonials || []
   </button>
 
   <!-- dots -->
-  <div id="carousel-dots" class="flex justify-center gap-2 mt-4"></div>
+  <div
+    aria-label="Pagination"
+    class="flex justify-center gap-2 mt-4 carousel-dots"
+  >
+  </div>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const wrapper = document.getElementById("carousel-wrapper")
-      const track = document.getElementById("carousel-track")
-      const prevBtn = document.getElementById("carousel-prev")
-      const nextBtn = document.getElementById("carousel-next")
-      const dotsCon = document.getElementById("carousel-dots")
+    function initiCarousel(element) {
+      const wrapper = element.querySelector(".carousel-wrapper")
+      const track = element.querySelector(".carousel-track")
+      const prevBtn = element.querySelector(".carousel-prev")
+      const nextBtn = element.querySelector(".carousel-next")
+      const dotsCon = element.querySelector(".carousel-dots")
+
       const slides = Array.from(track.children)
 
       // ← how many dots/pages you want
@@ -83,7 +85,7 @@ const testimonials = page?.Testimonials || []
 
       let slideWidth,
         gapSize,
-        segmentWidth,
+        segmentWidth = 0,
         current = 0
 
       function rebuild() {
@@ -157,6 +159,15 @@ const testimonials = page?.Testimonials || []
 
       // kick it off
       rebuild()
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".carousel").forEach(initiCarousel)
+
+      /*const wrapper = document.getElementById("carousel-wrapper")
+      const track = document.getElementById("carousel-track")
+      const prevBtn = document.getElementById("carousel-prev")
+      const nextBtn = document.getElementById("carousel-next")
+      const dotsCon = document.getElementById("carousel-dots")*/
     })
   </script>
 </div>

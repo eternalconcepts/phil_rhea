@@ -52,8 +52,8 @@ const {
         </ul>
         <button
           class="bg-blue-500 text-white p-2 rounded duration-200 lg:hidden"
-          data-state="on"
-          onclick="burgerMenu(this)">Click Me 3</button
+          data-state="off"
+          onclick="burgerMenu(this)">Off</button
         >
       </nav>
     </header>
@@ -111,9 +111,9 @@ const {
         const menuOn = button.getAttribute("data-state")
         const menuBtn = menuOn === "on" ? "off" : "on"
         button.setAttribute("data-state", menuBtn)
-        button.textContent = menuBtn === "on" ? "Turn Off" : "Turn On"
+        button.textContent = menuBtn === "on" ? "On" : "Off"
 
-        // swap button colors
+        // swap button colors. Copy the styling that the button has for original states as well
         button.classList.toggle("bg-blue-500")
         button.classList.toggle("bg-red-500")
 
