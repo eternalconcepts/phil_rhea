@@ -55,18 +55,20 @@ const projectCards = page.projectCard ?? []
               .join(", ")
 
             return (
-              <div class="grid grid-rows-[auto_auto_1fr]" key={card.id}>
-                <img
-                  src={`${CDN_URL}${url}`}
-                  width={width}
-                  height={height}
-                  srcset={srcSet}
-                  sizes="(min-width:1024px)25vw,50vw"
-                  alt={card.categoryTitle}
-                  loading="lazy"
-                  decoding="async"
-                  class="w-full h-full object-cover rounded-xl aspect-video lg:aspect-square border border-stone-400 transition-opacity duration-500 ease-in-out"
-                />
+              <div class="grid grid-rows-[auto_auto_1fr] " key={card.id}>
+                <div>
+                  <img
+                    src={`${CDN_URL}${url}`}
+                    width={width}
+                    height={height}
+                    srcset={srcSet}
+                    sizes="(min-width:1024px)25vw,50vw"
+                    alt={card.categoryTitle}
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-full object-cover rounded-xl aspect-video lg:aspect-square border border-stone-400 transition-opacity duration-500 ease-in-out"
+                  />
+                </div>
                 <h3 class="text-xl lg:text-2xl pt-4 ">{card.categoryTitle}</h3>
                 <p class="mt-2 h-full flex align-top">{card.categoryDesc}</p>
               </div>

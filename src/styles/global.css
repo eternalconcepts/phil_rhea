@@ -15,6 +15,7 @@
 
 @import "tailwindcss";
 @plugin 'tailwind-scrollbar';
+@plugin "@tailwindcss/typography";
 
 @layer theme {
   h1,
