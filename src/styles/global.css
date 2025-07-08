@@ -42,8 +42,8 @@ html {
 }
 /* start hidden & shifted left */
 #menuLinks li {
-  @apply opacity-0 lg:opacity-100;
-  transform: translateX(4rem);
+  @apply opacity-0 lg:opacity-100 lg:translate-x-0;
+  transform: translateX(0);
   transition: transform 300ms ease, opacity 300ms ease;
   transition-delay: 0;
 }
@@ -51,7 +51,7 @@ html {
 /* on open: slide in, with delays */
 #menuLinks.links-open li {
   opacity: 1;
-  transform: translateX(0);
+  transform: translateX(-1rem);
 }
 #menuLinks.links-open li:nth-child(1) {
   transition-delay: 150ms;
@@ -75,4 +75,176 @@ html {
 /* on close: zero delay so they all fade at once */
 #menuLinks:not(.links-open) li {
   transition-delay: 0 !important;
+}
+
+/* Burger Menu Button */
+button.burger .line-1,
+button.burger .line-2,
+button.burger .line-3 {
+  @apply w-5 h-0.5 bg-stone-400 origin-center left-1/2 -translate-x-1/2 -translate-y-1/2 absolute;
+}
+/* Burger menu animations */
+button.burger[data-state="init"] .line-1 {
+  animation: burgerInit1 1s ease-out forwards;
+}
+button.burger[data-state="init"] .line-2 {
+  animation: burgerInit2 0.75s ease-out forwards;
+}
+button.burger[data-state="init"] .line-3 {
+  animation: burgerInit3 0.5s ease-out forwards;
+}
+
+button.burger[data-state="on"] .line-1 {
+  animation: burgerOn1 1s ease-in forwards;
+}
+button.burger[data-state="on"] .line-2 {
+  animation: burgerOn2 1s ease-in forwards;
+}
+button.burger[data-state="on"] .line-3 {
+  animation: burgerOn3 1s ease-in forwards;
+}
+
+button.burger[data-state="off"] .line-1 {
+  animation: burgerOff1 1s ease-in reverse forwards;
+}
+button.burger[data-state="off"] .line-2 {
+  animation: burgerOff2 1s ease-in reverse forwards;
+}
+button.burger[data-state="off"] .line-3 {
+  animation: burgerOff3 1s ease-in reverse forwards;
+}
+
+@keyframes burgerInit1 {
+  0% {
+    top: -100%;
+  }
+  100% {
+    top: 28%;
+  }
+}
+@keyframes burgerInit2 {
+  0% {
+    top: -100%;
+  }
+
+  100% {
+    top: 50%;
+  }
+}
+@keyframes burgerInit3 {
+  0% {
+    top: -100%;
+  }
+
+  100% {
+    top: 72%;
+  }
+}
+@keyframes burgerOn1 {
+  0% {
+    top: 28%;
+    transform: rotate(0deg);
+  }
+  50% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  51% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  100% {
+    top: 50%;
+    transform: rotate(45deg);
+  }
+}
+@keyframes burgerOn2 {
+  0% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  50% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  51% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  100% {
+    top: 50%;
+    transform: rotate(45deg);
+  }
+}
+@keyframes burgerOn3 {
+  0% {
+    top: 72%;
+    transform: rotate(0deg);
+  }
+  50% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  51% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  100% {
+    top: 50%;
+    transform: rotate(-45deg);
+  }
+}
+@keyframes burgerOff1 {
+  0% {
+    top: 28%;
+    transform: rotate(0deg);
+  }
+  50% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  51% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  100% {
+    top: 50%;
+    transform: rotate(45deg);
+  }
+}
+@keyframes burgerOff2 {
+  0% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  50% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  51% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  100% {
+    top: 50%;
+    transform: rotate(45deg);
+  }
+}
+@keyframes burgerOff3 {
+  0% {
+    top: 72%;
+    transform: rotate(0deg);
+  }
+  50% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  51% {
+    top: 50%;
+    transform: rotate(0deg);
+  }
+  100% {
+    top: 50%;
+    transform: rotate(-45deg);
+  }
 }
