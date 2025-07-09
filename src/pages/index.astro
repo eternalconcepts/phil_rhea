@@ -1,21 +1,10 @@
 ---
-import { Picture } from "astro:assets"
-import image01 from "../images/sta_02.jpg"
-import image02 from "../images/civ_01.jpg"
-import image03 from "../images/res_07.jpg"
-import philipStudents from "../images/philip-rhea-archtiect.jpg"
-import philipWork from "../images/philip-rhea-architecture.jpg"
 import HeroBanner from "../components/homepage/HeroBanner.astro"
-import Welcome from "../components/Welcome.astro"
 import Layout from "../components/layout/Layout.astro"
 import PastProjects from "../components/homepage/PastProjects.astro"
 import BioSection from "../components/homepage/BioSection.astro"
-import Testimonials from "../components/homepage/Testimonials.astro"
 import TestimonialsCarousel from "../components/homepage/TestimonialsCarousel.astro"
 import ContactSection from "../components/homepage/ContactSection.astro"
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout
@@ -29,37 +18,13 @@ import ContactSection from "../components/homepage/ContactSection.astro"
     class="w-11/12 m-auto max-w-[1200px] flex flex-col items-center justify-center min-h-[50vh] py-10"
   >
     <h2 class="text-2xl">Testimonials</h2>
-    <p>
-      The best part of my work is the complacency and the appreciation of
-      clients.
+    <p class="max-w-[800px] leading-loose">
+      Perhaps the most rewarding aspect of my work is the feedback from clients
+      who have trusted me to bring their vision to life and see it come to
+      fruition.
     </p>
     <TestimonialsCarousel />
   </section>
 
   <ContactSection />
-  <!-- <section
-    class="bg-stone-100 py-10 min-h-screen flex flex-col items-center justify-center"
-  >
-    <form action="/contact" method="POST" class="max-w-md mx-auto">
-      <h2 class="text-2xl font-semibold">Parley</h2>
-      <h3 class="text-lg mb-2">Start a conversation</h3>
-      <div class="mb-4">
-        <label for="name" class="block text-sm font-medium text-gray-700"
-          >Name</label
-        >
-        <input
-          type="text"
-          id="name"
-          name="name"
-          class="mt-1 p-2 w-full border border-gray-300 rounded-md"
-        />
-      </div>
-      <button
-        type="submit"
-        class="border-2 border-stone-400 rounded-lg p-3 text-stone-400 uppercase"
-      >
-        Send Message
-      </button>
-    </form>
-  </section> -->
 </Layout>
