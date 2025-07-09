@@ -12,6 +12,7 @@ import PastProjects from "../components/homepage/PastProjects.astro"
 import BioSection from "../components/homepage/BioSection.astro"
 import Testimonials from "../components/homepage/Testimonials.astro"
 import TestimonialsCarousel from "../components/homepage/TestimonialsCarousel.astro"
+import ContactSection from "../components/homepage/ContactSection.astro"
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
@@ -25,7 +26,7 @@ import TestimonialsCarousel from "../components/homepage/TestimonialsCarousel.as
   <PastProjects />
   <BioSection />
   <section
-    class="w-11/12 m-auto max-w-[1200px] flex flex-col items-center justify-center py-20"
+    class="w-11/12 m-auto max-w-[1200px] flex flex-col items-center justify-center min-h-[50vh] py-10"
   >
     <h2 class="text-2xl">Testimonials</h2>
     <p>
@@ -34,7 +35,9 @@ import TestimonialsCarousel from "../components/homepage/TestimonialsCarousel.as
     </p>
     <TestimonialsCarousel />
   </section>
-  <section
+
+  <ContactSection />
+  <!-- <section
     class="bg-stone-100 py-10 min-h-screen flex flex-col items-center justify-center"
   >
     <form action="/contact" method="POST" class="max-w-md mx-auto">
@@ -58,5 +61,5 @@ import TestimonialsCarousel from "../components/homepage/TestimonialsCarousel.as
         Send Message
       </button>
     </form>
-  </section>
+  </section> -->
 </Layout>

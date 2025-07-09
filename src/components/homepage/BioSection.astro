@@ -26,8 +26,12 @@ const images = [page.bioImgMain, page.bioImgSecond]
 ---
 
 <section
-  class="overflow-x-hidden min-h-screen border-y-2 border-[#d3bd79] flex flex-col xl:flex-row items-center justify-center px-5 py-10 relative bg-amber-50/50"
+  class="overflow-x-hidden min-h-screen border-y-2 border-stone-200 flex flex-col xl:flex-row items-center justify-center px-5 py-10 relative bg-stone-50"
 >
+  <div
+    class="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-stone-100 to-transparent"
+  >
+  </div>
   <ColumnIcon />
   <ColumnIcon class="right-0 translate-x-[50%]" />
   <div class="relative w-11/12 max-w-[700px]">
@@ -83,13 +87,13 @@ const images = [page.bioImgMain, page.bioImgSecond]
   <div class="w-full max-w-[700px] leading-loose mt-10 xl:mt-0">
     <p class="text-xl flex items-center">
       <span
-        class="font-pacioli text-5xl text-[#D3AF37] translate-x-5"
+        class="font-pacioli text-5xl text-rose-600 translate-x-5"
         aria-label="Philip">p</span
       >
     </p>
     <p class="indent-18 -translate-y-8 px-2 lg:px-8">
       <span
-        class="font-trajan text-2xl text-[#D3AF37] -ml-2 lg:-ml-8"
+        class="font-trajan text-2xl text-rose-600 -ml-2 lg:-ml-8"
         aria-label="Philip J. Rhea">hilip J. Rhea</span
       >
       {page.Biography}

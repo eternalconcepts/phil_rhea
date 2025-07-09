@@ -88,14 +88,15 @@ const {
       </nav>
     </header>
 
-    <main class="w-screen overflow-hidden h-full min-h-[calc(100vh-8rem)]">
+    <main
+      class="w-screen overflow-hidden h-full min-h-[calc(100vh-8rem)] bg-stone-200"
+    >
       <div
         id="pageContent"
-        class="duration-500 ease-[cubic-bezier(1,-0.13,.17,1.18)] h-screen overflow-auto relative origin-top-left pt-16"
+        class="duration-500 ease-[cubic-bezier(1,-0.13,.17,1.18)] h-screen overflow-auto relative origin-top-left pt-16 bg-white"
       >
         <slot />
         <footer class="bg-gray-800 text-white text-center p-4 w-full h-16">
-          <!-- … your footer icons … -->
           &copy; {new Date().getFullYear()} My Site. All rights reserved.
         </footer>
       </div>
