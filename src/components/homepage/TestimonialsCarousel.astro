@@ -1,14 +1,7 @@
 ---
 import TestimonialsCard from "../TestimonialsCard.astro"
-import fetchApi from "../../lib/strapi"
-
-const { data: page, error } = await fetchApi({
-  endpoint: "home-page",
-  query: { Testimonials: "", populate: "*" },
-})
-if (error) console.error("Strapi error:", error)
-
-const testimonials = page?.Testimonials || []
+const { homePage } = Astro.props
+const testimonials = homePage?.Testimonials || []
 ---
 
 <div class="relative mx-auto w-full carousel py-10">

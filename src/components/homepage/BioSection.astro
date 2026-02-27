@@ -1,20 +1,11 @@
 ---
 import { Picture } from "astro:assets"
-import fetchApi from "../../lib/strapi"
 import ColumnIcon from "./ColumnIcon.astro"
 
 const CDN_URL = import.meta.env.CDN_URL || ""
+const { homePage } = Astro.props
 
-// 1) fetch home-page, but only grab the two bio images
-const { data: page } = await fetchApi({
-  endpoint: "home-page",
-  query: {
-    populate: "*",
-  },
-})
-
-// 2) turn the two separate fields into one array
-const images = [page.bioImgMain, page.bioImgSecond]
+const images = [homePage?.bioImgMain, homePage?.bioImgSecond]
   .filter(Boolean) // in case one is missing
   .map((img) => ({
     id: img.id,
@@ -96,7 +87,7 @@ const images = [page.bioImgMain, page.bioImgSecond]
         class="font-trajan text-2xl text-rose-600 -ml-2 lg:-ml-8"
         aria-label="Philip J. Rhea">hilip J. Rhea</span
       >
-      {page.Biography}
+      {homePage?.Biography}
     </p>
   </div>
 </section>

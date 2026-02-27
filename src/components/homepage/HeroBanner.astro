@@ -1,12 +1,12 @@
 ---
 import { Picture } from "astro:assets"
-import fetchApi from "../../lib/strapi"
 
 import image01 from "../../images/sta_02.jpg"
 import image02 from "../../images/civ_01.jpg"
 import image03 from "../../images/res_07.jpg"
 
 const CDN_URL = import.meta.env.CDN_URL || ""
+const { homePage } = Astro.props
 
 const hexToRgba = (hex, a) => {
   const r = parseInt(hex.slice(1, 3), 16)
@@ -16,18 +16,11 @@ const hexToRgba = (hex, a) => {
   return `rgba(${r}, ${g}, ${b}, ${a})`
 }
 
-const homePageData = await fetchApi({
-  endpoint: "home-page",
-  wrappedByKey: "data",
-  query: { populate: "herobanner.heroSlides.slide_image" },
-})
-
-const title = homePageData?.herobanner.title || "Eternal Concepts"
+const title = homePage?.herobanner?.title || "Eternal Concepts"
 const description =
-  homePageData?.herobanner.description ||
+  homePage?.herobanner?.description ||
   "Welcome to Eternal Concepts, where we bring your architectural visions to life. Traditional craftsmanship meets modern design. Design, remodel, and elevate your spaces with us."
-const imagesData = homePageData?.herobanner?.heroSlides || []
-console.log("homePageData", homePageData)
+const imagesData = homePage?.herobanner?.heroSlides || []
 
 const images = imagesData.map((img) => ({
   color: img.slide_color,
@@ -36,7 +29,6 @@ const images = imagesData.map((img) => ({
   height: img.slide_image?.height,
   formats: img.slide_image?.formats,
 }))
-console.log("images", images)
 ---
 
 <div

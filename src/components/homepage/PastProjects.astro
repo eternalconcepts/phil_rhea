@@ -1,28 +1,11 @@
 ---
 import { Picture } from "astro:assets"
-import fetchApi from "../../lib/strapi"
 import { imageConfig } from "astro:assets"
 
 const CDN_URL = import.meta.env.CDN_URL || ""
+const { homePage } = Astro.props
 
-const json = await fetchApi({
-  endpoint: "home-page",
-  query: {
-    populate: "projectCard.categoryImg",
-  },
-})
-const imagesData = json?.projectCard?.categoryImg || []
-
-const images = imagesData.map((img) => ({
-  url: img.categoryImg?.url,
-  width: img.categoryImg?.width,
-  height: img.categoryImg?.height,
-  formats: img.categoryImg?.formats,
-}))
-
-const page = json.data
-
-const projectCards = page.projectCard ?? []
+const projectCards = homePage?.projectCard ?? []
 ---
 
 <section
