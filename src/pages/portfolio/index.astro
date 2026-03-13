@@ -1,0 +1,85 @@
+---
+import Layout from "../../components/layout/Layout.astro"
+import ProjectCard from "../../components/portfolio/ProjectCard.astro"
+import {
+  fetchPortfolioProjects,
+  isPortfolioAuthConfigured,
+  isPortfolioConfigured,
+} from "../../lib/server/portfolio"
+
+let projects = []
+let loadError = ""
+
+if (isPortfolioConfigured()) {
+  try {
+    projects = await fetchPortfolioProjects()
+  } catch (error) {
+    loadError = error instanceof Error ? error.message : "Unable to load portfolio projects."
+  }
+}
+
+const hasAuth = isPortfolioAuthConfigured()
+---
+
+<Layout
+  title="Portfolio | Eternal Concepts by Philip J. Rhea"
+  description="Selected architecture and design projects by Philip J. Rhea."
+>
+  <section class="relative flex min-h-[38vh] items-end overflow-hidden bg-stone-800 text-stone-100">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.22),transparent_38%),linear-gradient(135deg,#44403c_0%,#1c1917_65%,#0c0a09_100%)]"></div>
+    <div class="absolute inset-y-0 left-[-2rem] flex items-center font-pacioli text-[38vw] leading-none text-white/6">
+      p
+    </div>
+    <div class="relative z-10 w-11/12 max-w-[1366px] px-0 py-16 sm:py-20 lg:py-24">
+      <p class="text-sm uppercase tracking-[0.4em] text-stone-300">Portfolio</p>
+      <h1 class="mt-4 max-w-4xl text-4xl sm:text-5xl lg:text-6xl">Built work and documented projects</h1>
+      <p class="mt-5 max-w-3xl text-base leading-8 text-stone-200 sm:text-lg">
+        Browse projects by thumbnail, location, and summary. Each project page includes the full description,
+        linked media folder images, optional YouTube videos, and a location map.
+      </p>
+    </div>
+  </section>
+
+  <section class="relative flex min-h-screen justify-center items-center text-stone-700">
+    <div class="pointer-events-none absolute inset-0 overflow-hidden text-center font-pacioli text-[100vh] text-stone-50 -leading-[20rem]">
+      e
+    </div>
+
+    <div class="z-1 w-11/12 max-w-[1366px] py-20">
+      <div class="max-w-3xl">
+        <h2 class="text-2xl lg:text-4xl">Project Archive</h2>
+        <p class="mt-2 leading-8 text-stone-500">
+          The grid below uses the same project-card presentation as the homepage previews, now backed by the
+          Strapi portfolio collection.
+        </p>
+      </div>
+
+      {
+        !isPortfolioConfigured() ? (
+          <div class="mt-10 rounded-2xl border border-amber-300 bg-amber-50 px-6 py-5 text-amber-900">
+            Add `STRAPI_URL` to this Astro app to load the portfolio.
+          </div>
+        ) : loadError ? (
+          <div class="mt-10 rounded-2xl border border-amber-300 bg-amber-50 px-6 py-5 text-amber-900">
+            <p>{loadError}</p>
+            {
+              !hasAuth ? (
+                <p class="mt-2 text-sm text-amber-800">
+                  If the portfolio collection or media library are not public, add `STRAPI_API_TOKEN` to this app.
+                </p>
+              ) : null
+            }
+          </div>
+        ) : projects.length === 0 ? (
+          <div class="mt-10 rounded-2xl border border-dashed border-stone-300 bg-white px-6 py-12 text-center text-stone-500">
+            No portfolio projects are published yet.
+          </div>
+        ) : (
+          <div class="mt-10 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+            {projects.map((project) => <ProjectCard project={project} />)}
+          </div>
+        )
+      }
+    </div>
+  </section>
+</Layout>

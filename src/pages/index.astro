@@ -7,15 +7,15 @@ import TestimonialsCarousel from "../components/homepage/TestimonialsCarousel.as
 import ContactSection from "../components/homepage/ContactSection.astro"
 import fetchApi from "../lib/strapi"
 
-const { data: homePage } = await fetchApi({
+const homePage = await fetchApi({
   endpoint: "home-page",
   wrappedByKey: "data",
   query: {
     "populate[herobanner][populate][heroSlides][populate]": "slide_image",
     "populate[projectCard][populate]": "categoryImg",
-    "populate[bioImgMain]": "*",
-    "populate[bioImgSecond]": "*",
-    "populate[Testimonials]": "*",
+    "populate[bioImgMain]": "true",
+    "populate[bioImgSecond]": "true",
+    "populate[Testimonials]": "true",
   },
 })
 ---

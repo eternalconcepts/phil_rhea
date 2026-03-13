@@ -1,0 +1,38 @@
+---
+import { portfolioProjectPath } from "../../lib/server/portfolio"
+
+const { project } = Astro.props
+const href = portfolioProjectPath(project.slug)
+---
+
+<a href={href} class="group grid grid-rows-[auto_auto_1fr_auto]" aria-label={`View ${project.title}`}>
+  <div class="overflow-hidden rounded-xl border border-stone-300 bg-stone-200 shadow-sm">
+    {
+      project.thumbnail ? (
+        <img
+          src={project.thumbnail.url}
+          alt={project.thumbnail.alt}
+          loading="lazy"
+          class="aspect-video w-full object-cover transition duration-500 ease-in-out group-hover:scale-[1.03] lg:aspect-square"
+        />
+      ) : (
+        <div class="grid aspect-video place-items-center bg-stone-100 text-center text-sm text-stone-500 lg:aspect-square">
+          Image coming soon
+        </div>
+      )
+    }
+  </div>
+
+  <h2 class="pt-4 text-xl lg:text-2xl">{project.title}</h2>
+
+  <div class="mt-2 flex h-full flex-col gap-2 text-stone-600">
+    {project.address ? <p class="font-serif italic text-stone-500">{project.address}</p> : null}
+    {project.size ? <p class="text-sm uppercase tracking-[0.2em] text-stone-400">{project.size}</p> : null}
+    <p>{project.shortDescription}</p>
+  </div>
+
+  <span class="mt-4 inline-flex items-center gap-2 text-sm uppercase tracking-[0.25em] text-stone-500 transition group-hover:text-stone-800">
+    View project
+    <span aria-hidden="true">-></span>
+  </span>
+</a>

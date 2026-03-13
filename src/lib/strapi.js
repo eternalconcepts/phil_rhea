@@ -28,10 +28,17 @@ export default async function fetchApi({
     })
   }
   const res = await fetch(url.toString())
-  let data = await res.json()
+  const payload = await res.json()
+
+  if (!res.ok) {
+    const message = payload?.error?.message || `Strapi request failed (${res.status})`
+    throw new Error(message)
+  }
+
+  let data = payload
 
   if (wrappedByKey) {
-    data = data[wrappedByKey]
+    data = data?.[wrappedByKey]
   }
 
   if (wrappedByList) {
