@@ -110,6 +110,14 @@ function normalizeVideos(videos) {
     }))
 }
 
+function normalizeSlugHistory(value) {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .map((entry) => String(entry || "").trim())
+    .filter(Boolean)
+}
+
 function mapProjectSummary(entry) {
   const thumbnail = normalizeMedia(entry.thumbnailImage) || normalizeMedia(entry.coverImage)
 
@@ -135,6 +143,20 @@ async function fetchFolderImages(folderId) {
   return files
     .map((file) => normalizeMedia(file))
     .filter(Boolean)
+}
+
+async function fetchPortfolioRedirectSlug(slug) {
+  if (!slug) return null
+
+  const payload = await strapiRequest(
+    `/api/${STRAPI_PORTFOLIO_COLLECTION}?fields[0]=slug&fields[1]=previousSlugs&pagination[pageSize]=500`
+  )
+
+  const match = unwrapCollection(payload).find((entry) =>
+    normalizeSlugHistory(entry.previousSlugs).includes(slug)
+  )
+
+  return match?.slug ? String(match.slug).trim() : null
 }
 
 export async function fetchPortfolioProjects() {
@@ -167,6 +189,20 @@ export async function fetchPortfolioProjectBySlug(slug) {
     videos: normalizeVideos(entry.videos),
     images,
     mapQuery: String(entry.address || ""),
+  }
+}
+
+export async function resolvePortfolioProjectBySlug(slug) {
+  const project = await fetchPortfolioProjectBySlug(slug)
+  if (project) {
+    return { project, redirectTo: null }
+  }
+
+  const redirectSlug = await fetchPortfolioRedirectSlug(slug)
+
+  return {
+    project: null,
+    redirectTo: redirectSlug && redirectSlug !== slug ? portfolioProjectPath(redirectSlug) : null,
   }
 }
 

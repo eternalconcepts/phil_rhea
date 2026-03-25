@@ -2,21 +2,28 @@
 import Layout from "../../components/layout/Layout.astro"
 import MediaGrid from "../../components/portfolio/MediaGrid.astro"
 import {
-  fetchPortfolioProjectBySlug,
   isPortfolioAuthConfigured,
   isPortfolioConfigured,
+  resolvePortfolioProjectBySlug,
 } from "../../lib/server/portfolio"
 
 const slug = Astro.params.slug || ""
 let project = null
 let loadError = ""
+let redirectTo = null
 
 if (isPortfolioConfigured() && slug) {
   try {
-    project = await fetchPortfolioProjectBySlug(slug)
+    const resolved = await resolvePortfolioProjectBySlug(slug)
+    project = resolved.project
+    redirectTo = resolved.redirectTo
   } catch (error) {
     loadError = error instanceof Error ? error.message : "Unable to load this portfolio project."
   }
+}
+
+if (!loadError && redirectTo) {
+  return Astro.redirect(redirectTo, 301)
 }
 
 if (!loadError && isPortfolioConfigured() && slug && !project) {
