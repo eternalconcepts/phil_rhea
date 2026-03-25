@@ -174,12 +174,6 @@ export function portfolioProjectPath(slug) {
   return `/portfolio/${slug}`
 }
 
-export function getMapEmbedUrl(query) {
-  const safeQuery = String(query || "").trim()
-  if (!safeQuery) return null
-  return `https://www.google.com/maps?q=${encodeURIComponent(safeQuery)}&z=14&output=embed`
-}
-
 export function isPortfolioConfigured() {
   return Boolean(STRAPI_URL)
 }

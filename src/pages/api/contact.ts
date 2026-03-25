@@ -4,7 +4,31 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import nodemailer from 'nodemailer';
 
+function jsonResponse(body: Record<string, unknown>, status: number) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+function getContactConfig() {
+  const smtpUser = (import.meta.env.GMAIL_SMTP_USER ?? '').toString().trim();
+  const smtpPass = (import.meta.env.GMAIL_SMTP_PASS ?? '').toString().trim();
+  const recipientEmail = (import.meta.env.CONTACT_RECIPIENT_EMAIL ?? '').toString().trim();
+
+  if (!smtpUser || !smtpPass || !recipientEmail) {
+    return null;
+  }
+
+  return { smtpUser, smtpPass, recipientEmail };
+}
+
 export const POST: APIRoute = async ({ request }) => {
+  const contentType = request.headers.get('content-type') ?? '';
+  if (!contentType.includes('multipart/form-data') && !contentType.includes('application/x-www-form-urlencoded')) {
+    return jsonResponse({ error: 'Unsupported form submission.' }, 415);
+  }
+
   const form = await request.formData();
 
   // honeypot to catch bots
@@ -19,12 +43,16 @@ export const POST: APIRoute = async ({ request }) => {
 
   // basic validation
   if (!email || !message) {
-    return new Response(
-      JSON.stringify({ error: 'Email & message are required.' }),
-      {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      }
+    return jsonResponse({ error: 'Email and message are required.' }, 400);
+  }
+
+  const config = getContactConfig();
+
+  if (!config) {
+    console.error('Contact form is missing SMTP configuration.');
+    return jsonResponse(
+      { error: 'The contact form is temporarily unavailable. Please try again later.' },
+      503
     );
   }
 
@@ -34,15 +62,18 @@ export const POST: APIRoute = async ({ request }) => {
     port: 465,
     secure: true, // SSL
     auth: {
-      user: import.meta.env.GMAIL_SMTP_USER,
-      pass: import.meta.env.GMAIL_SMTP_PASS,
+      user: config.smtpUser,
+      pass: config.smtpPass,
     },
   });
 
   try {
+    await transporter.verify();
+
     await transporter.sendMail({
-      from: `"Website Contact" <${import.meta.env.GMAIL_SMTP_USER}>`,
-      to: import.meta.env.CONTACT_RECIPIENT_EMAIL,
+      from: `"Website Contact" <${config.smtpUser}>`,
+      to: config.recipientEmail,
+      replyTo: email,
       subject: `New message from ${name || email}`,
       html: `
         <div
@@ -138,21 +169,12 @@ NEW MESSAGE FROM WEBSITE:    </p>
 </div>`,
     });
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return jsonResponse({ success: true }, 200);
   } catch (err: any) {
     console.error('Gmail send error:', err);
-    return new Response(
-      JSON.stringify({ error: 'Failed to send message.' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
+    return jsonResponse(
+      { error: 'We could not send your message right now. Please try again shortly.' },
+      502
     );
   }
 };

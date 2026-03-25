@@ -1,4 +1,6 @@
 ---
+import Youtube from "./Youtube.astro"
+
 const { videos = [], images = [], projectTitle = "Project" } = Astro.props
 
 function getYouTubeId(url) {
@@ -38,19 +40,7 @@ function getYouTubeId(url) {
         const title = video.title || `${projectTitle} video ${index + 1}`
 
         return youtubeId ? (
-          <div class="overflow-hidden rounded-xl border border-stone-300 bg-white shadow-sm">
-            <div class="aspect-video">
-              <iframe
-                src={`https://www.youtube.com/embed/${youtubeId}`}
-                title={title}
-                class="h-full w-full border-0"
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-              ></iframe>
-            </div>
-          </div>
+          <Youtube videoId={youtubeId} alt={title} index={index} />
         ) : (
           <a
             href={video.url}
