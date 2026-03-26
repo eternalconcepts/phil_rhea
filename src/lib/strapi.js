@@ -27,8 +27,30 @@ export default async function fetchApi({
       url.searchParams.append(key, value)
     })
   }
-  const res = await fetch(url.toString())
-  const payload = await res.json()
+  const headers = {
+    Accept: "application/json",
+  }
+
+  if (import.meta.env.STRAPI_API_TOKEN) {
+    headers.Authorization = `Bearer ${import.meta.env.STRAPI_API_TOKEN}`
+  }
+
+  const res = await fetch(url.toString(), { headers })
+  const contentType = res.headers.get("content-type") || ""
+  const rawBody = await res.text()
+
+  let payload = null
+
+  if (rawBody) {
+    try {
+      payload = JSON.parse(rawBody)
+    } catch (error) {
+      const preview = rawBody.slice(0, 180).replace(/\s+/g, " ").trim()
+      throw new Error(
+        `Strapi returned non-JSON content (${res.status}, ${contentType || "unknown content type"}). Response starts with: ${preview}`
+      )
+    }
+  }
 
   if (!res.ok) {
     const message = payload?.error?.message || `Strapi request failed (${res.status})`
