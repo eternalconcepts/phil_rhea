@@ -1,36 +1,58 @@
 ---
 import Layout from "../../components/layout/Layout.astro"
 import MediaGrid from "../../components/portfolio/MediaGrid.astro"
+import { samplePortfolioProject } from "../../lib/sample-content"
 import {
+  fetchPortfolioProjectBySlug,
+  fetchPortfolioProjects,
   isPortfolioAuthConfigured,
   isPortfolioConfigured,
-  resolvePortfolioProjectBySlug,
 } from "../../lib/server/portfolio"
 
-const slug = Astro.params.slug || ""
-let project = null
-let loadError = ""
-let redirectTo = null
+export async function getStaticPaths() {
+  const sampleEntry = {
+    params: {
+      slug: samplePortfolioProject.slug,
+    },
+    props: {
+      project: samplePortfolioProject,
+    },
+  }
 
-if (isPortfolioConfigured() && slug) {
+  if (!isPortfolioConfigured()) {
+    return [sampleEntry]
+  }
+
   try {
-    const resolved = await resolvePortfolioProjectBySlug(slug)
-    project = resolved.project
-    redirectTo = resolved.redirectTo
+    const projects = await fetchPortfolioProjects()
+    const entries = await Promise.all(
+      projects.map(async (project) => ({
+        slug: project.slug,
+        project: await fetchPortfolioProjectBySlug(project.slug),
+      }))
+    )
+
+    const staticEntries = entries
+      .filter((entry) => entry.project)
+      .map((entry) => ({
+        params: {
+          slug: entry.slug,
+        },
+        props: {
+          project: entry.project,
+        },
+      }))
+      .filter((entry) => entry.params.slug !== samplePortfolioProject.slug)
+    return [sampleEntry, ...staticEntries]
   } catch (error) {
-    loadError = error instanceof Error ? error.message : "Unable to load this portfolio project."
+    console.error("Unable to generate static portfolio pages.", error)
+    return [sampleEntry]
   }
 }
 
-if (!loadError && redirectTo) {
-  return Astro.redirect(redirectTo, 301)
-}
-
-if (!loadError && isPortfolioConfigured() && slug && !project) {
-  Astro.response.status = 404
-}
-
+const { project = null } = Astro.props
 const hasAuth = isPortfolioAuthConfigured()
+const isSampleProject = project?.slug === samplePortfolioProject.slug
 const projectFacts = project
   ? [
       project.address ? { label: "Location", value: project.address } : null,
@@ -46,26 +68,7 @@ const projectFacts = project
   description={project?.shortDescription || "Portfolio project details for Eternal Concepts by Philip J. Rhea."}
 >
   {
-    !isPortfolioConfigured() ? (
-      <section class="grid min-h-[70vh] place-items-center px-6 text-center text-stone-700">
-        <div class="max-w-xl rounded-2xl border border-amber-300 bg-amber-50 px-6 py-8">
-          Add `STRAPI_URL` to load portfolio projects from Strapi.
-        </div>
-      </section>
-    ) : loadError ? (
-      <section class="grid min-h-[70vh] place-items-center px-6 text-center text-stone-700">
-        <div class="max-w-xl rounded-2xl border border-amber-300 bg-amber-50 px-6 py-8">
-          <p>{loadError}</p>
-          {
-            !hasAuth ? (
-              <p class="mt-2 text-sm text-amber-800">
-                If this content is not public in Strapi, add `STRAPI_API_TOKEN` to the Astro app.
-              </p>
-            ) : null
-          }
-        </div>
-      </section>
-    ) : !project ? (
+    !project ? (
       <section class="grid min-h-[70vh] place-items-center px-6 text-center text-stone-700">
         <div class="max-w-xl space-y-4">
           <p class="text-sm uppercase tracking-[0.4em] text-stone-400">Portfolio</p>
@@ -73,6 +76,13 @@ const projectFacts = project
           <p class="leading-8 text-stone-500">
             This project does not exist yet or is not published in Strapi.
           </p>
+          {
+            !hasAuth ? (
+              <p class="text-sm text-amber-800">
+                If this content is not public in Strapi, add `STRAPI_API_TOKEN` to the Astro app.
+              </p>
+            ) : null
+          }
           <a href="/portfolio" class="inline-flex border border-stone-300 px-6 py-3 text-sm uppercase tracking-[0.25em] text-stone-700">
             Back to portfolio
           </a>
@@ -80,6 +90,13 @@ const projectFacts = project
       </section>
     ) : (
       <>
+        {
+          isSampleProject ? (
+            <section class="bg-amber-50 px-6 py-4 text-center text-sm text-amber-900">
+              Sample portfolio page shown because local Strapi portfolio content is not available yet.
+            </section>
+          ) : null
+        }
         <section class="relative isolate overflow-hidden bg-stone-900 text-white">
           {
             project.coverImage ? (

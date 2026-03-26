@@ -32,7 +32,7 @@ export default async function fetchApi({
   }
 
   if (import.meta.env.STRAPI_API_TOKEN) {
-    headers.Authorization = `Bearer ${import.meta.env.STRAPI_API_TOKEN}`
+    headers.Authorization = `Bearer ${import.meta.env.STRAPI_API_TOKEN || process.env.STRAPI_API_TOKEN}`
   }
 
   const res = await fetch(url.toString(), { headers })

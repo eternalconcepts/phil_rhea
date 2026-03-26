@@ -355,7 +355,7 @@ async function fetchCaseStudyRedirectSlug(slug) {
 
 export async function fetchCaseStudies() {
   const payload = await strapiRequest(
-    "/api/case-studies?sort[0]=publishedAt:desc&sort[1]=title:asc&populate[coverImage]=*"
+    "/api/case-studies?sort[0]=publishedAt:desc&sort[1]=title:asc&populate[coverImage]=true"
   )
 
   return unwrapCollection(payload)
@@ -365,7 +365,7 @@ export async function fetchCaseStudies() {
 
 export async function fetchCaseStudyBySlug(slug) {
   const payload = await strapiRequest(
-    `/api/case-studies?filters[slug][$eq]=${encodeURIComponent(slug)}&populate[coverImage]=*&populate[blocks][populate]=*`
+    `/api/case-studies?filters[slug][$eq]=${encodeURIComponent(slug)}&populate[coverImage]=true&populate[blocks][populate]=*`
   )
 
   const entry = unwrapSingle(payload)

@@ -1,6 +1,7 @@
 ---
 import Layout from "../../components/layout/Layout.astro"
 import ProjectCard from "../../components/portfolio/ProjectCard.astro"
+import { samplePortfolioProjects } from "../../lib/sample-content"
 import {
   fetchPortfolioProjects,
   isPortfolioAuthConfigured,
@@ -9,6 +10,7 @@ import {
 
 let projects = []
 let loadError = ""
+let isUsingSampleProjects = false
 
 if (isPortfolioConfigured()) {
   try {
@@ -16,6 +18,11 @@ if (isPortfolioConfigured()) {
   } catch (error) {
     loadError = error instanceof Error ? error.message : "Unable to load portfolio projects."
   }
+}
+
+if (projects.length === 0) {
+  projects = samplePortfolioProjects
+  isUsingSampleProjects = true
 }
 
 const hasAuth = isPortfolioAuthConfigured()
@@ -73,11 +80,7 @@ const projectsWithSize = projects.filter((project) => project.size).length
       </div>
 
       {
-        !isPortfolioConfigured() ? (
-          <div class="mt-10 rounded-2xl border border-amber-300 bg-amber-50 px-6 py-5 text-amber-900">
-            Add `STRAPI_URL` to this Astro app to load the portfolio.
-          </div>
-        ) : loadError ? (
+        loadError && !isUsingSampleProjects ? (
           <div class="mt-10 rounded-2xl border border-amber-300 bg-amber-50 px-6 py-5 text-amber-900">
             <p>{loadError}</p>
             {
@@ -94,6 +97,13 @@ const projectsWithSize = projects.filter((project) => project.size).length
           </div>
         ) : (
           <>
+            {
+              isUsingSampleProjects ? (
+                <div class="mt-10 rounded-2xl border border-amber-300 bg-amber-50 px-6 py-5 text-amber-900">
+                  Showing a local sample portfolio project until Strapi portfolio content is available.
+                </div>
+              ) : null
+            }
             {
               featuredProject ? (
                 <a

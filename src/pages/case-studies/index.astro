@@ -1,6 +1,7 @@
 ---
 import Layout from "../../components/layout/Layout.astro"
 import ProjectCard from "../../components/portfolio/ProjectCard.astro"
+import { sampleCaseStudies } from "../../lib/sample-content"
 import {
   fetchCaseStudies,
   isCaseStudyAuthConfigured,
@@ -9,6 +10,7 @@ import {
 
 let caseStudies = []
 let loadError = ""
+let isUsingSampleCaseStudies = false
 
 if (isCaseStudyConfigured()) {
   try {
@@ -16,6 +18,11 @@ if (isCaseStudyConfigured()) {
   } catch (error) {
     loadError = error instanceof Error ? error.message : "Unable to load case studies."
   }
+}
+
+if (caseStudies.length === 0) {
+  caseStudies = sampleCaseStudies
+  isUsingSampleCaseStudies = true
 }
 
 const hasAuth = isCaseStudyAuthConfigured()
@@ -56,11 +63,7 @@ const remainingCaseStudies = featuredCaseStudy ? caseStudies.slice(1) : []
       </div>
 
       {
-        !isCaseStudyConfigured() ? (
-          <div class="mt-10 rounded-2xl border border-amber-300 bg-amber-50 px-6 py-5 text-amber-900">
-            Add `STRAPI_URL` to this Astro app to load case studies.
-          </div>
-        ) : loadError ? (
+        loadError && !isUsingSampleCaseStudies ? (
           <div class="mt-10 rounded-2xl border border-amber-300 bg-amber-50 px-6 py-5 text-amber-900">
             <p>{loadError}</p>
             {
@@ -77,6 +80,13 @@ const remainingCaseStudies = featuredCaseStudy ? caseStudies.slice(1) : []
           </div>
         ) : (
           <>
+            {
+              isUsingSampleCaseStudies ? (
+                <div class="mt-10 rounded-2xl border border-amber-300 bg-amber-50 px-6 py-5 text-amber-900">
+                  Showing a local sample case study until Strapi case-study content is available.
+                </div>
+              ) : null
+            }
             {
               featuredCaseStudy ? (
                 <a

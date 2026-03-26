@@ -1,36 +1,58 @@
 ---
 import CaseStudyBlocks from "../../components/case-studies/CaseStudyBlocks.astro"
 import Layout from "../../components/layout/Layout.astro"
+import { sampleCaseStudy } from "../../lib/sample-content"
 import {
+  fetchCaseStudies,
+  fetchCaseStudyBySlug,
   isCaseStudyAuthConfigured,
   isCaseStudyConfigured,
-  resolveCaseStudyBySlug,
 } from "../../lib/server/case-studies"
 
-const slug = Astro.params.slug || ""
-let caseStudy = null
-let loadError = ""
-let redirectTo = null
+export async function getStaticPaths() {
+  const sampleEntry = {
+    params: {
+      slug: sampleCaseStudy.slug,
+    },
+    props: {
+      caseStudy: sampleCaseStudy,
+    },
+  }
 
-if (isCaseStudyConfigured() && slug) {
+  if (!isCaseStudyConfigured()) {
+    return [sampleEntry]
+  }
+
   try {
-    const resolved = await resolveCaseStudyBySlug(slug)
-    caseStudy = resolved.caseStudy
-    redirectTo = resolved.redirectTo
+    const caseStudies = await fetchCaseStudies()
+    const entries = await Promise.all(
+      caseStudies.map(async (caseStudy) => ({
+        slug: caseStudy.slug,
+        caseStudy: await fetchCaseStudyBySlug(caseStudy.slug),
+      }))
+    )
+
+    const staticEntries = entries
+      .filter((entry) => entry.caseStudy)
+      .map((entry) => ({
+        params: {
+          slug: entry.slug,
+        },
+        props: {
+          caseStudy: entry.caseStudy,
+        },
+      }))
+      .filter((entry) => entry.params.slug !== sampleCaseStudy.slug)
+    return [sampleEntry, ...staticEntries]
   } catch (error) {
-    loadError = error instanceof Error ? error.message : "Unable to load this case study."
+    console.error("Unable to generate static case-study pages.", error)
+    return [sampleEntry]
   }
 }
 
-if (!loadError && redirectTo) {
-  return Astro.redirect(redirectTo, 301)
-}
-
-if (!loadError && isCaseStudyConfigured() && slug && !caseStudy) {
-  Astro.response.status = 404
-}
-
+const { caseStudy = null } = Astro.props
 const hasAuth = isCaseStudyAuthConfigured()
+const isSampleCaseStudy = caseStudy?.slug === sampleCaseStudy.slug
 ---
 
 <Layout
@@ -38,26 +60,7 @@ const hasAuth = isCaseStudyAuthConfigured()
   description={caseStudy?.shortDescription || "Case study details for Eternal Concepts by Philip J. Rhea."}
 >
   {
-    !isCaseStudyConfigured() ? (
-      <section class="grid min-h-[70vh] place-items-center px-6 text-center text-stone-700">
-        <div class="max-w-xl rounded-2xl border border-amber-300 bg-amber-50 px-6 py-8">
-          Add `STRAPI_URL` to load case studies from Strapi.
-        </div>
-      </section>
-    ) : loadError ? (
-      <section class="grid min-h-[70vh] place-items-center px-6 text-center text-stone-700">
-        <div class="max-w-xl rounded-2xl border border-amber-300 bg-amber-50 px-6 py-8">
-          <p>{loadError}</p>
-          {
-            !hasAuth ? (
-              <p class="mt-2 text-sm text-amber-800">
-                If this content is not public in Strapi, add `STRAPI_API_TOKEN` to the Astro app.
-              </p>
-            ) : null
-          }
-        </div>
-      </section>
-    ) : !caseStudy ? (
+    !caseStudy ? (
       <section class="grid min-h-[70vh] place-items-center px-6 text-center text-stone-700">
         <div class="max-w-xl space-y-4">
           <p class="text-sm uppercase tracking-[0.4em] text-stone-400">Case Studies</p>
@@ -65,6 +68,13 @@ const hasAuth = isCaseStudyAuthConfigured()
           <p class="leading-8 text-stone-500">
             This case study does not exist yet or is not published in Strapi.
           </p>
+          {
+            !hasAuth ? (
+              <p class="text-sm text-amber-800">
+                If this content is not public in Strapi, add `STRAPI_API_TOKEN` to the Astro app.
+              </p>
+            ) : null
+          }
           <a href="/case-studies" class="inline-flex border border-stone-300 px-6 py-3 text-sm uppercase tracking-[0.25em] text-stone-700">
             Back to case studies
           </a>
@@ -72,6 +82,13 @@ const hasAuth = isCaseStudyAuthConfigured()
       </section>
     ) : (
       <>
+        {
+          isSampleCaseStudy ? (
+            <section class="bg-amber-50 px-6 py-4 text-center text-sm text-amber-900">
+              Sample case-study page shown because local Strapi case-study content is not available yet.
+            </section>
+          ) : null
+        }
         <section class="relative isolate overflow-hidden bg-stone-900 text-white">
           {
             caseStudy.coverImage ? (
