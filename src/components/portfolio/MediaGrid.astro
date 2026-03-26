@@ -64,8 +64,13 @@ function getYouTubeId(url) {
         >
           <img
             src={image.url}
+            width={image.width}
+            height={image.height}
             alt={image.alt}
+            srcset={image.srcSet || undefined}
+            sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
             loading="lazy"
+            decoding="async"
             class="aspect-video h-full w-full object-cover transition duration-500 ease-in-out group-hover:scale-[1.03]"
           />
         </a>

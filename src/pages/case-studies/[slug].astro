@@ -86,22 +86,20 @@ const isSampleCaseStudy = caseStudy?.slug === sampleCaseStudy.slug
       </section>
     ) : (
       <>
-        {
-          isSampleCaseStudy ? (
-            <section class="bg-amber-50 px-6 py-4 text-center text-sm text-amber-900">
-              Sample case-study page shown because local Strapi case-study content is not available yet.
-            </section>
-          ) : null
-        }
         <section class="relative isolate overflow-hidden bg-stone-900 text-white">
           {
             caseStudy.coverImage ? (
               <div class="absolute inset-0">
                 <img
-                  src={caseStudy.coverImage.largeUrl || caseStudy.coverImage.url}
+                  src={caseStudy.coverImage.url}
+                  width={caseStudy.coverImage.width}
+                  height={caseStudy.coverImage.height}
                   alt={caseStudy.coverImage.alt}
+                  srcset={caseStudy.coverImage.srcSet || undefined}
+                  sizes="100vw"
                   class="h-full w-full object-cover"
                   loading="eager"
+                  decoding="async"
                 />
               </div>
             ) : (

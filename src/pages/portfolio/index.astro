@@ -98,13 +98,6 @@ const projectsWithSize = projects.filter((project) => project.size).length
         ) : (
           <>
             {
-              isUsingSampleProjects ? (
-                <div class="mt-10 rounded-2xl border border-amber-300 bg-amber-50 px-6 py-5 text-amber-900">
-                  Showing a local sample portfolio project until Strapi portfolio content is available.
-                </div>
-              ) : null
-            }
-            {
               featuredProject ? (
                 <a
                   href={`/portfolio/${featuredProject.slug}`}
@@ -114,8 +107,14 @@ const projectsWithSize = projects.filter((project) => project.size).length
                     {
                       featuredProject.thumbnail ? (
                         <img
-                          src={featuredProject.thumbnail.largeUrl || featuredProject.thumbnail.url}
+                          src={featuredProject.thumbnail.url}
+                          width={featuredProject.thumbnail.width}
+                          height={featuredProject.thumbnail.height}
                           alt={featuredProject.thumbnail.alt}
+                          srcset={featuredProject.thumbnail.srcSet || undefined}
+                          sizes="(min-width: 1024px) 58vw, 100vw"
+                          loading="eager"
+                          decoding="async"
                           class="h-full w-full object-cover"
                         />
                       ) : (

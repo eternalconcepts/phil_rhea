@@ -1,20 +1,10 @@
 import { requestStrapi } from "../strapi-request"
+import { normalizeStrapiMedia } from "../strapi-media"
 
 const STRAPI_URL = (import.meta.env.STRAPI_URL || "").replace(/\/$/, "")
 const STRAPI_API_TOKEN = import.meta.env.STRAPI_API_TOKEN || ""
 const STRAPI_PORTFOLIO_COLLECTION =
   import.meta.env.STRAPI_PORTFOLIO_COLLECTION || "portfolio-projects"
-const STRAPI_ASSET_URL = (
-  import.meta.env.CDN_URL || import.meta.env.STRAPI_URL || ""
-).replace(/\/$/, "")
-
-function toAbsoluteStrapiUrl(url) {
-  if (!url) return null
-  if (/^https?:\/\//i.test(url)) return url
-  if (!STRAPI_ASSET_URL) return url
-  return `${STRAPI_ASSET_URL}${url.startsWith("/") ? url : `/${url}`}`
-}
-
 async function strapiRequest(path) {
   return requestStrapi({
     path,
@@ -51,24 +41,8 @@ function unwrapSingle(payload) {
 
 function normalizeMedia(media) {
   const rawMedia = media?.data ? media.data : media
-  if (!rawMedia) return null
-
-  const item = unwrapEntity(rawMedia)
-  const formats = item.formats || {}
-  const largeCandidate =
-    formats.large?.url || formats.medium?.url || formats.small?.url || item.url || null
-  const baseUrl = item.url || largeCandidate
-
-  if (!baseUrl) return null
-
-  return {
-    id: item.id,
-    alt: item.alternativeText || item.name || "Portfolio image",
-    url: toAbsoluteStrapiUrl(baseUrl) || baseUrl,
-    largeUrl: toAbsoluteStrapiUrl(largeCandidate || baseUrl) || baseUrl,
-    width: item.width,
-    height: item.height,
-  }
+  const item = rawMedia ? unwrapEntity(rawMedia) : null
+  return normalizeStrapiMedia(item, "Portfolio image")
 }
 
 function normalizeFolder(folder) {

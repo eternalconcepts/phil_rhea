@@ -81,13 +81,6 @@ const remainingCaseStudies = featuredCaseStudy ? caseStudies.slice(1) : []
         ) : (
           <>
             {
-              isUsingSampleCaseStudies ? (
-                <div class="mt-10 rounded-2xl border border-amber-300 bg-amber-50 px-6 py-5 text-amber-900">
-                  Showing a local sample case study until Strapi case-study content is available.
-                </div>
-              ) : null
-            }
-            {
               featuredCaseStudy ? (
                 <a
                   href={`/case-studies/${featuredCaseStudy.slug}`}
@@ -97,8 +90,14 @@ const remainingCaseStudies = featuredCaseStudy ? caseStudies.slice(1) : []
                     {
                       featuredCaseStudy.thumbnail ? (
                         <img
-                          src={featuredCaseStudy.thumbnail.largeUrl || featuredCaseStudy.thumbnail.url}
+                          src={featuredCaseStudy.thumbnail.url}
+                          width={featuredCaseStudy.thumbnail.width}
+                          height={featuredCaseStudy.thumbnail.height}
                           alt={featuredCaseStudy.thumbnail.alt}
+                          srcset={featuredCaseStudy.thumbnail.srcSet || undefined}
+                          sizes="(min-width: 1024px) 58vw, 100vw"
+                          loading="eager"
+                          decoding="async"
                           class="h-full w-full object-cover"
                         />
                       ) : (

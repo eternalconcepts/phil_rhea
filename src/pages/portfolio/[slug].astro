@@ -94,22 +94,20 @@ const projectFacts = project
       </section>
     ) : (
       <>
-        {
-          isSampleProject ? (
-            <section class="bg-amber-50 px-6 py-4 text-center text-sm text-amber-900">
-              Sample portfolio page shown because local Strapi portfolio content is not available yet.
-            </section>
-          ) : null
-        }
         <section class="relative isolate overflow-hidden bg-stone-900 text-white">
           {
             project.coverImage ? (
               <div class="absolute inset-0">
                 <img
-                  src={project.coverImage.largeUrl}
+                  src={project.coverImage.url}
+                  width={project.coverImage.width}
+                  height={project.coverImage.height}
                   alt={project.coverImage.alt}
+                  srcset={project.coverImage.srcSet || undefined}
+                  sizes="100vw"
                   class="h-full w-full object-cover"
                   loading="eager"
+                  decoding="async"
                 />
               </div>
             ) : (

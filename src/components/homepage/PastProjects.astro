@@ -1,4 +1,6 @@
 ---
+import { buildStrapiSrcSet, pickStrapiImageSource, toAbsoluteStrapiUrl } from "../../lib/strapi-media"
+
 const CDN_URL = import.meta.env.CDN_URL || ""
 
 const {
@@ -23,13 +25,17 @@ function normalizeItem(item) {
       description: item.categoryDesc || "",
       href: null,
       image: {
-        url: url ? `${CDN_URL}${url}` : "",
+        url:
+          pickStrapiImageSource(media, { targetWidth: 900 })?.url ||
+          (url ? toAbsoluteStrapiUrl(url) : ""),
         width,
         height,
-        srcSet: [thumbnail, small, medium, large]
-          .filter((format) => format?.url)
-          .map((format) => `${CDN_URL}${format.url} ${format.width}w`)
-          .join(", "),
+        srcSet:
+          buildStrapiSrcSet(media) ||
+          [thumbnail, small, medium, large]
+            .filter((format) => format?.url)
+            .map((format) => `${CDN_URL}${format.url} ${format.width}w`)
+            .join(", "),
       },
     }
   }
@@ -48,7 +54,7 @@ function normalizeItem(item) {
           url: item.thumbnail.url,
           width: item.thumbnail.width,
           height: item.thumbnail.height,
-          srcSet: "",
+          srcSet: item.thumbnail.srcSet || "",
         }
       : null,
   }
@@ -86,7 +92,7 @@ const cards = items.map(normalizeItem)
                         width={card.image.width}
                         height={card.image.height}
                         srcset={card.image.srcSet || undefined}
-                        sizes="(min-width:1024px)25vw,50vw"
+                        sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                         alt={card.title}
                         loading="lazy"
                         decoding="async"

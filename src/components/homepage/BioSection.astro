@@ -1,18 +1,17 @@
 ---
-import { Picture } from "astro:assets"
-import ColumnIcon from "./ColumnIcon.astro"
+import { buildStrapiSrcSet, pickStrapiImageSource, toAbsoluteStrapiUrl } from "../../lib/strapi-media"
 
-const CDN_URL = import.meta.env.CDN_URL || ""
 const { homePage } = Astro.props
 
 const images = [homePage?.bioImgMain, homePage?.bioImgSecond]
-  .filter(Boolean) // in case one is missing
+  .filter(Boolean)
   .map((img) => ({
     id: img.id,
-    url: img.url,
     width: img.width,
     height: img.height,
-    formats: img.formats, // thumbnail / small / medium / large
+    alt: img.alternativeText || img.name || "Phil Rhea",
+    src: pickStrapiImageSource(img, { targetWidth: 1200 })?.url || toAbsoluteStrapiUrl(img.url),
+    srcSet: buildStrapiSrcSet(img),
   }))
 ---
 
@@ -23,8 +22,8 @@ const images = [homePage?.bioImgMain, homePage?.bioImgSecond]
     class="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-stone-100 to-transparent"
   >
   </div>
-  <ColumnIcon />
-  <ColumnIcon class="right-0 translate-x-[50%]" />
+
+
   <div class="relative w-11/12 max-w-[700px]">
     {/* background frames */}
     <div
@@ -40,34 +39,24 @@ const images = [homePage?.bioImgMain, homePage?.bioImgSecond]
     >
     </div>
 
-    {/* 3) map through your two Strapi images */}
     {
       images.map((image, i) => {
-        // build srcset from formats just like your hero slider
-        const srcSet = ["thumbnail", "small", "medium", "large"]
-          .map((k) => {
-            const f = image.formats?.[k]
-            return f ? `${CDN_URL}${f.url} ${f.width}w` : ""
-          })
-          .filter(Boolean)
-          .join(", ")
-
-        // choose classes per image (first is main, second is accent)
         const cls =
           i === 0
             ? "w-full h-full max-w-[800px] object-cover rounded-xl aspect-square"
             : "hidden xl:flex absolute max-w-[200px] 2xl:max-w-[300px] object-cover rounded-xl xl:-bottom-[10%] xl:-left-[10%] shadow-2xl aspect-square"
 
         return (
-          <Picture
+          <img
             key={image.id}
-            src={`${CDN_URL}${image.url}`}
+            src={image.src}
             width={image.width}
             height={image.height}
-            srcset={srcSet}
-            sizes={i === 0 ? "100vw" : "200px"}
+            srcset={image.srcSet || undefined}
+            sizes={i === 0 ? "(min-width: 1280px) 700px, (min-width: 768px) 80vw, 100vw" : "(min-width: 1536px) 300px, 200px"}
             loading="lazy"
-            alt={i === 0 ? "Phil Rhea" : "Phil Rhea at work"}
+            decoding="async"
+            alt={i === 0 ? image.alt || "Phil Rhea" : image.alt || "Phil Rhea at work"}
             class={cls}
           />
         )

@@ -55,9 +55,14 @@ function getYouTubeId(url) {
           <figure class="overflow-hidden rounded-[2rem] border border-stone-300 bg-white shadow-sm">
             {block.heading ? <div class="px-6 pt-6 text-2xl sm:text-3xl">{block.heading}</div> : null}
             <img
-              src={block.image.largeUrl || block.image.url}
+              src={block.image.url}
+              width={block.image.width}
+              height={block.image.height}
               alt={block.image.alt}
+              srcset={block.image.srcSet || undefined}
+              sizes="(min-width: 1280px) 1200px, 100vw"
               loading="lazy"
+              decoding="async"
               class:list={["w-full object-cover", block.heading ? "mt-6" : ""]}
             />
             {block.caption ? <figcaption class="px-6 py-4 text-sm leading-7 text-stone-500">{block.caption}</figcaption> : null}
@@ -74,9 +79,14 @@ function getYouTubeId(url) {
               {block.images.map((image) => (
                 <figure class="overflow-hidden rounded-[1.5rem] bg-stone-100">
                   <img
-                    src={image.largeUrl || image.url}
+                    src={image.url}
+                    width={image.width}
+                    height={image.height}
                     alt={image.alt}
+                    srcset={image.srcSet || undefined}
+                    sizes="(min-width: 640px) 50vw, 100vw"
                     loading="lazy"
+                    decoding="async"
                     class="h-full w-full object-cover"
                   />
                 </figure>

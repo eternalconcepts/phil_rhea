@@ -1,11 +1,10 @@
 ---
-import { Picture } from "astro:assets"
-
 import image01 from "../../images/sta_02.jpg"
 import image02 from "../../images/civ_01.jpg"
 import image03 from "../../images/res_07.jpg"
+import { buildStrapiSrcSet, pickStrapiImageSource, toAbsoluteStrapiUrl } from "../../lib/strapi-media"
+import PJRLogoEmblem from "../icons/PJRLogoEmblem.astro"
 
-const CDN_URL = import.meta.env.CDN_URL || ""
 const { homePage } = Astro.props
 
 const hexToRgba = (hex, a) => {
@@ -47,10 +46,12 @@ const imagesData = homePage?.herobanner?.heroSlides || []
 
 const images = imagesData.map((img) => ({
   color: img.slide_color,
-  url: img.slide_image?.url,
   width: img.slide_image?.width,
   height: img.slide_image?.height,
-  formats: img.slide_image?.formats,
+  url:
+    pickStrapiImageSource(img.slide_image, { targetWidth: 1600, allowOriginal: false })?.url ||
+    toAbsoluteStrapiUrl(img.slide_image?.url),
+  srcSet: buildStrapiSrcSet(img.slide_image),
 }))
 const slides = images.length > 0 ? images : fallbackImages
 ---
@@ -63,25 +64,13 @@ const slides = images.length > 0 ? images : fallbackImages
   >
     {
       slides.map((image, i) => {
-        const s1 = image.formats?.thumbnail
-        const s2 = image.formats?.small
-        const s3 = image.formats?.medium
-        const s4 = image.formats?.large
-        const srcSet = [
-          s1 ? `${CDN_URL}${s1.url} ${s1.width}w` : "",
-          s2 ? `${CDN_URL}${s2.url} ${s2.width}w` : "",
-          s3 ? `${CDN_URL}${s3.url} ${s3.width}w` : "",
-          s4 ? `${CDN_URL}${s4.url} ${s4.width}w` : "",
-        ]
-          .filter(Boolean)
-          .join(", ")
         return (
           <img
-            src={image.url.startsWith("http") ? image.url : `${CDN_URL}${image.url}`}
+            src={image.url}
             width={image.width}
             height={image.height}
-            srcset={srcSet}
-            sizes={"100vw"}
+            srcset={image.srcSet || undefined}
+            sizes="100vw"
             alt={`Hero image ${i + 1}`}
             loading={i === 0 ? "eager" : "lazy"}
             decoding={i === 0 ? "sync" : "async"}
@@ -128,7 +117,7 @@ const slides = images.length > 0 ? images : fallbackImages
        lg:text-white
        duration-1000 ease-in-out"
       >
-        {title}
+        <PJRLogoEmblem class="size-14 fill-current inline-block" />{title}
       </h2>
       <p class="lg:text-lg max-w-[600px] leading-loose">
         {description}
