@@ -2,6 +2,7 @@
 import Layout from "../../components/layout/Layout.astro"
 import MediaGrid from "../../components/portfolio/MediaGrid.astro"
 import { samplePortfolioProject } from "../../lib/sample-content"
+import { isTemporaryStrapiError } from "../../lib/strapi-request"
 import {
   fetchPortfolioProjectBySlug,
   fetchPortfolioProjects,
@@ -46,6 +47,9 @@ export async function getStaticPaths() {
     return [sampleEntry, ...staticEntries]
   } catch (error) {
     console.error("Unable to generate static portfolio pages.", error)
+    if (isTemporaryStrapiError(error)) {
+      return []
+    }
     return [sampleEntry]
   }
 }

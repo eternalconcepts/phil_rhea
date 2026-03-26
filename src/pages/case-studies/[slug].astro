@@ -2,6 +2,7 @@
 import CaseStudyBlocks from "../../components/case-studies/CaseStudyBlocks.astro"
 import Layout from "../../components/layout/Layout.astro"
 import { sampleCaseStudy } from "../../lib/sample-content"
+import { isTemporaryStrapiError } from "../../lib/strapi-request"
 import {
   fetchCaseStudies,
   fetchCaseStudyBySlug,
@@ -46,6 +47,9 @@ export async function getStaticPaths() {
     return [sampleEntry, ...staticEntries]
   } catch (error) {
     console.error("Unable to generate static case-study pages.", error)
+    if (isTemporaryStrapiError(error)) {
+      return []
+    }
     return [sampleEntry]
   }
 }

@@ -20,6 +20,29 @@ const title = homePage?.herobanner?.title || "Eternal Concepts"
 const description =
   homePage?.herobanner?.description ||
   "Welcome to Eternal Concepts, where we bring your architectural visions to life. Traditional craftsmanship meets modern design. Design, remodel, and elevate your spaces with us."
+const fallbackImages = [
+  {
+    color: "#d97706",
+    url: image01.src,
+    width: image01.width,
+    height: image01.height,
+    formats: {},
+  },
+  {
+    color: "#b45309",
+    url: image02.src,
+    width: image02.width,
+    height: image02.height,
+    formats: {},
+  },
+  {
+    color: "#92400e",
+    url: image03.src,
+    width: image03.width,
+    height: image03.height,
+    formats: {},
+  },
+]
 const imagesData = homePage?.herobanner?.heroSlides || []
 
 const images = imagesData.map((img) => ({
@@ -29,6 +52,7 @@ const images = imagesData.map((img) => ({
   height: img.slide_image?.height,
   formats: img.slide_image?.formats,
 }))
+const slides = images.length > 0 ? images : fallbackImages
 ---
 
 <div
@@ -38,7 +62,7 @@ const images = imagesData.map((img) => ({
     class="relative aspect-square sm:aspect-video w-full h-full object-cover overflow-hidden"
   >
     {
-      images.map((image, i) => {
+      slides.map((image, i) => {
         const s1 = image.formats?.thumbnail
         const s2 = image.formats?.small
         const s3 = image.formats?.medium
@@ -53,7 +77,7 @@ const images = imagesData.map((img) => ({
           .join(", ")
         return (
           <img
-            src={CDN_URL + image.url}
+            src={image.url.startsWith("http") ? image.url : `${CDN_URL}${image.url}`}
             width={image.width}
             height={image.height}
             srcset={srcSet}
@@ -76,7 +100,7 @@ const images = imagesData.map((img) => ({
     >
     </div>
     {
-      images.map((image, i) => (
+      slides.map((image, i) => (
         <div
           class={`hidden lg:block lg:absolute inset-0 w-full h-full lg:w-3/4 bg-gradient-to-r from-35% to-transparent transition-opacity duration-1000 ease-in-out ${
             i === 0 ? "opacity-100 z-30" : " opacity-0 z-20 "
@@ -117,6 +141,8 @@ const images = imagesData.map((img) => ({
   const images = document.querySelectorAll("[data-hero]")
   const backgrounds = document.querySelectorAll("[data-hero-bg]")
   const heroTitle = document.getElementById("hero-title")
+
+  if (!images.length || !backgrounds.length || !heroTitle) return
 
   // pull the colors out of your data-color attrs
   const slideColors = Array.from(backgrounds).map((bg) =>

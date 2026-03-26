@@ -1,3 +1,5 @@
+import { requestStrapi } from "../strapi-request"
+
 const STRAPI_URL = (import.meta.env.STRAPI_URL || "").replace(/\/$/, "")
 const STRAPI_API_TOKEN = import.meta.env.STRAPI_API_TOKEN || ""
 const STRAPI_PORTFOLIO_COLLECTION =
@@ -14,27 +16,11 @@ function toAbsoluteStrapiUrl(url) {
 }
 
 async function strapiRequest(path) {
-  if (!STRAPI_URL) {
-    throw new Error("Missing STRAPI_URL environment variable.")
-  }
-
-  const headers = {
-    Accept: "application/json",
-  }
-
-  if (STRAPI_API_TOKEN) {
-    headers.Authorization = `Bearer ${STRAPI_API_TOKEN}`
-  }
-
-  const response = await fetch(`${STRAPI_URL}${path}`, { headers })
-  const payload = await response.json().catch(() => null)
-
-  if (!response.ok) {
-    const message = payload?.error?.message || `Strapi request failed (${response.status})`
-    throw new Error(message)
-  }
-
-  return payload
+  return requestStrapi({
+    path,
+    baseUrl: STRAPI_URL,
+    token: STRAPI_API_TOKEN,
+  })
 }
 
 function unwrapEntity(entry) {

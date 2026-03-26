@@ -1,3 +1,5 @@
+import { requestStrapi, StrapiRequestError } from "../strapi-request"
+
 const STRAPI_URL = (import.meta.env.STRAPI_URL || "").replace(/\/$/, "")
 const STRAPI_API_TOKEN = import.meta.env.STRAPI_API_TOKEN || ""
 const STRAPI_ASSET_URL = (
@@ -12,32 +14,27 @@ function toAbsoluteStrapiUrl(url) {
 }
 
 async function strapiRequest(path) {
-  if (!STRAPI_URL) {
-    throw new Error("Missing STRAPI_URL environment variable.")
+  try {
+    return await requestStrapi({
+      path,
+      baseUrl: STRAPI_URL,
+      token: STRAPI_API_TOKEN,
+    })
+  } catch (error) {
+    if (error instanceof StrapiRequestError && error.status === 401) {
+      throw new Error(
+        "Strapi rejected STRAPI_API_TOKEN. Generate a new API token in Strapi and update the Astro `.env` file."
+      )
+    }
+
+    if (error instanceof StrapiRequestError && error.status === 403) {
+      throw new Error(
+        "The case-study collection is not public in Strapi, and the current Astro credentials do not have access."
+      )
+    }
+
+    throw error
   }
-
-  const headers = {
-    Accept: "application/json",
-  }
-
-  if (STRAPI_API_TOKEN) {
-    headers.Authorization = `Bearer ${STRAPI_API_TOKEN}`
-  }
-
-  const response = await fetch(`${STRAPI_URL}${path}`, { headers })
-  const payload = await response.json().catch(() => null)
-
-  if (!response.ok) {
-    const message =
-      response.status === 401
-        ? "Strapi rejected STRAPI_API_TOKEN. Generate a new API token in Strapi and update the Astro `.env` file."
-        : response.status === 403
-          ? "The case-study collection is not public in Strapi, and the current Astro credentials do not have access."
-          : payload?.error?.message || `Strapi request failed (${response.status})`
-    throw new Error(message)
-  }
-
-  return payload
 }
 
 function unwrapEntity(entry) {

@@ -7,20 +7,30 @@ import TestimonialsCarousel from "../components/homepage/TestimonialsCarousel.as
 import ContactSection from "../components/homepage/ContactSection.astro"
 import fetchApi from "../lib/strapi"
 import { sampleCaseStudies, samplePortfolioProjects } from "../lib/sample-content"
+import { isTemporaryStrapiError } from "../lib/strapi-request"
 import { fetchCaseStudies, isCaseStudyConfigured } from "../lib/server/case-studies"
 import { fetchPortfolioProjects, isPortfolioConfigured } from "../lib/server/portfolio"
 
-const homePage = await fetchApi({
-  endpoint: "home-page",
-  wrappedByKey: "data",
-  query: {
-    "populate[herobanner][populate][heroSlides][populate]": "slide_image",
-    "populate[projectCard][populate]": "categoryImg",
-    "populate[bioImgMain]": "true",
-    "populate[bioImgSecond]": "true",
-    "populate[Testimonials]": "true",
-  },
-})
+let homePage = null
+let isHomepageOutage = false
+
+try {
+  homePage = await fetchApi({
+    endpoint: "home-page",
+    wrappedByKey: "data",
+    query: {
+      "populate[herobanner][populate][heroSlides][populate]": "slide_image",
+      "populate[projectCard][populate]": "categoryImg",
+      "populate[bioImgMain]": "true",
+      "populate[bioImgSecond]": "true",
+      "populate[Testimonials]": "true",
+    },
+  })
+} catch (error) {
+  console.error("Unable to load homepage content.", error)
+  isHomepageOutage = isTemporaryStrapiError(error)
+  homePage = null
+}
 
 let portfolioProjects = []
 let caseStudies = []
@@ -54,6 +64,13 @@ if (caseStudies.length === 0) {
   title="Eternal Concepts by Philip J. Rhea"
   description="Architecture, Remodeling, Elevation and Renderings by Philip J. Rhea"
 >
+  {
+    isHomepageOutage ? (
+      <section class="bg-amber-50 px-6 py-4 text-center text-sm text-amber-900">
+        Homepage content is temporarily unavailable from Strapi. Showing fallback content where possible.
+      </section>
+    ) : null
+  }
   <HeroBanner homePage={homePage} />
   <PastProjects
     title="Portfolio"

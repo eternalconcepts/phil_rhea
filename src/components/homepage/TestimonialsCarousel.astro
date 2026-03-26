@@ -5,62 +5,69 @@ const testimonials = homePage?.Testimonials || []
 ---
 
 <div class="relative mx-auto w-full carousel py-10">
-  <!-- 1) GRID track: each slide is 100%/per-view via grid-auto-columns -->
-  <div
-    class="overflow-x-auto scrollbar-track-transparent scrollbar-thumb-transparent w-full scroll-smooth carousel-wrapper"
-  >
-    <div class="gap-5 grid grid-flow-col carousel-track">
-      {
-        testimonials.map((t, i) => (
-          <TestimonialsCard
-            class="w-[calc(91.6vw)]"
-            referralText={t.referral_text}
-            referralPerson={t.referral_person}
-          />
-        ))
-      }
-    </div>
-  </div>
+  {
+    testimonials.length === 0 ? (
+      <div class="rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-6 py-10 text-center text-stone-500">
+        Testimonials will appear here when Strapi content is available.
+      </div>
+    ) : (
+      <>
+        <div
+          class="overflow-x-auto scrollbar-track-transparent scrollbar-thumb-transparent w-full scroll-smooth carousel-wrapper"
+        >
+          <div class="gap-5 grid grid-flow-col carousel-track">
+            {
+              testimonials.map((t, i) => (
+                <TestimonialsCard
+                  class="w-[calc(91.6vw)]"
+                  referralText={t.referral_text}
+                  referralPerson={t.referral_person}
+                />
+              ))
+            }
+          </div>
+        </div>
 
-  <!-- prev/next -->
-  <button
-    class="absolute top-1/2 left-2 -translate-y-1/2 bg-white rounded-full border-2 lg:border-stone-400 lg:text-stone-400 hover:border-rose-600 hover:text-rose-600 border-rose-600 text-rose-600 duration-200 carousel-prev"
-    style="display:none"
-    aria-label="Previous slide"
-  >
-    <svg
-      class="fill-current size-8 p-1 rounded-full"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 32 32"
-    >
-      <path
-        d="M20.914 9.914l-2.829-2.829-8.914 8.914 8.914 8.914 2.828-2.828-6.086-6.086z"
-      ></path>
-    </svg>
-  </button>
+        <button
+          class="absolute top-1/2 left-2 -translate-y-1/2 bg-white rounded-full border-2 lg:border-stone-400 lg:text-stone-400 hover:border-rose-600 hover:text-rose-600 border-rose-600 text-rose-600 duration-200 carousel-prev"
+          style="display:none"
+          aria-label="Previous slide"
+        >
+          <svg
+            class="fill-current size-8 p-1 rounded-full"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 32 32"
+          >
+            <path
+              d="M20.914 9.914l-2.829-2.829-8.914 8.914 8.914 8.914 2.828-2.828-6.086-6.086z"
+            ></path>
+          </svg>
+        </button>
 
-  <button
-    class="absolute top-1/2 right-2 -translate-y-1/2 bg-white rounded-full border-2 lg:border-stone-400 lg:text-stone-400 hover:border-rose-600 hover:text-rose-600 border-rose-600 text-rose-600 duration-200 carousel-next"
-    style="display:none"
-    aria-label="Next slide"
-  >
-    <svg
-      class="fill-current size-8 p-1 rounded-full rotate-180"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 32 32"
-    >
-      <path
-        d="M20.914 9.914l-2.829-2.829-8.914 8.914 8.914 8.914 2.828-2.828-6.086-6.086z"
-      ></path>
-    </svg>
-  </button>
+        <button
+          class="absolute top-1/2 right-2 -translate-y-1/2 bg-white rounded-full border-2 lg:border-stone-400 lg:text-stone-400 hover:border-rose-600 hover:text-rose-600 border-rose-600 text-rose-600 duration-200 carousel-next"
+          style="display:none"
+          aria-label="Next slide"
+        >
+          <svg
+            class="fill-current size-8 p-1 rounded-full rotate-180"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 32 32"
+          >
+            <path
+              d="M20.914 9.914l-2.829-2.829-8.914 8.914 8.914 8.914 2.828-2.828-6.086-6.086z"
+            ></path>
+          </svg>
+        </button>
 
-  <!-- dots -->
-  <div
-    aria-label="Pagination"
-    class="flex justify-center gap-2 mt-4 carousel-dots"
-  >
-  </div>
+        <div
+          aria-label="Pagination"
+          class="flex justify-center gap-2 mt-4 carousel-dots"
+        >
+        </div>
+      </>
+    )
+  }
   <script>
     function initiCarousel(element) {
       const wrapper = element.querySelector(".carousel-wrapper")
@@ -70,6 +77,8 @@ const testimonials = homePage?.Testimonials || []
       const dotsCon = element.querySelector(".carousel-dots")
 
       const slides = Array.from(track.children)
+
+      if (!wrapper || !track || !prevBtn || !nextBtn || !dotsCon || slides.length === 0) return
 
       // ← how many dots/pages you want
       const dotsCount = slides.length
