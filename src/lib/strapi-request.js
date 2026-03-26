@@ -8,6 +8,7 @@ export class StrapiRequestError extends Error {
     this.contentType = options.contentType ?? ""
     this.preview = options.preview ?? ""
     this.temporary = Boolean(options.temporary)
+    this.retryable = Boolean(options.retryable)
     this.cause = options.cause
   }
 }
@@ -26,6 +27,10 @@ function normalizePreview(rawBody) {
 
 function isJsonContentType(contentType) {
   return contentType.toLowerCase().includes("application/json")
+}
+
+function getRetryDelay(attempt) {
+  return 300 * (attempt + 1)
 }
 
 function buildStrapiUrl({ baseUrl, path, query }) {
@@ -59,10 +64,12 @@ function buildStrapiError({ response, contentType, rawBody, payload, cause }) {
   const status = response?.status ?? null
   const preview = rawBody ? normalizePreview(rawBody) : ""
   const temporary = !response || status >= 500
+  const retryable = !response || status >= 400
 
   if (!response) {
     return new StrapiRequestError("Unable to reach Strapi.", {
       temporary: true,
+      retryable: true,
       cause,
     })
   }
@@ -75,6 +82,7 @@ function buildStrapiError({ response, contentType, rawBody, payload, cause }) {
         contentType,
         preview,
         temporary,
+        retryable,
         cause,
       }
     )
@@ -87,6 +95,7 @@ function buildStrapiError({ response, contentType, rawBody, payload, cause }) {
       contentType,
       preview,
       temporary,
+      retryable,
       cause,
     }
   )
@@ -155,18 +164,19 @@ export async function requestStrapi({
           ? error
           : new StrapiRequestError("Unable to reach Strapi.", {
               temporary: true,
+              retryable: true,
               cause: error,
             })
 
       lastError = wrappedError
 
-      if (!wrappedError.temporary || attempt === maxRetries) {
+      if (!wrappedError.retryable || attempt === maxRetries) {
         throw wrappedError
       }
 
-      await sleep(250 * (attempt + 1))
+      await sleep(getRetryDelay(attempt))
     }
   }
 
-  throw lastError || new StrapiRequestError("Unable to reach Strapi.", { temporary: true })
+  throw lastError || new StrapiRequestError("Unable to reach Strapi.", { temporary: true, retryable: true })
 }
