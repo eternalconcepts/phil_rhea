@@ -119,15 +119,15 @@ function normalizeSlugHistory(value) {
 }
 
 function mapProjectSummary(entry) {
-  const thumbnail = normalizeMedia(entry.thumbnailImage) || normalizeMedia(entry.coverImage)
+  const thumbnail = normalizeMedia(entry.coverImage)
 
   return {
     id: entry.id,
     slug: String(entry.slug || ""),
     title: String(entry.title || "Untitled project"),
-    address: String(entry.address || ""),
-    size: String(entry.size || ""),
-    shortDescription: String(entry.shortDescription || ""),
+    address: String(entry.projectAddress || ""),
+    size: String(entry.projectSize || ""),
+    shortDescription: String(entry.projectDescription || ""),
     thumbnail,
   }
 }
@@ -178,7 +178,7 @@ export async function fetchPortfolioProjectBySlug(slug) {
   if (!entry) return null
 
   const summary = mapProjectSummary(entry)
-  const folder = normalizeFolder(entry.mediaFolder)
+  const folder = normalizeFolder(entry.galleryFolder)
   const images = await fetchFolderImages(folder?.id)
 
   return {
@@ -188,7 +188,7 @@ export async function fetchPortfolioProjectBySlug(slug) {
     folder,
     videos: normalizeVideos(entry.videos),
     images,
-    mapQuery: String(entry.address || ""),
+    mapQuery: String(entry.projectAddress || ""),
   }
 }
 

@@ -1,0 +1,150 @@
+---
+import Layout from "../../components/layout/Layout.astro"
+import ProjectCard from "../../components/portfolio/ProjectCard.astro"
+import {
+  fetchCaseStudies,
+  isCaseStudyAuthConfigured,
+  isCaseStudyConfigured,
+} from "../../lib/server/case-studies"
+
+let caseStudies = []
+let loadError = ""
+
+if (isCaseStudyConfigured()) {
+  try {
+    caseStudies = await fetchCaseStudies()
+  } catch (error) {
+    loadError = error instanceof Error ? error.message : "Unable to load case studies."
+  }
+}
+
+const hasAuth = isCaseStudyAuthConfigured()
+const featuredCaseStudy = caseStudies[0] || null
+const remainingCaseStudies = featuredCaseStudy ? caseStudies.slice(1) : []
+---
+
+<Layout
+  title="Case Studies | Eternal Concepts by Philip J. Rhea"
+  description="Narrative case studies and supporting media by Philip J. Rhea."
+>
+  <section class="relative flex min-h-[38vh] items-end overflow-hidden bg-stone-800 text-stone-100">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.22),transparent_38%),linear-gradient(135deg,#57534e_0%,#292524_65%,#0c0a09_100%)]"></div>
+    <div class="absolute inset-y-0 left-[-2rem] flex items-center font-pacioli text-[30vw] leading-none text-white/6">
+      c
+    </div>
+    <div class="relative z-10 w-11/12 max-w-[1366px] px-0 py-16 sm:py-20 lg:py-24">
+      <p class="text-sm uppercase tracking-[0.4em] text-stone-300">Case Studies</p>
+      <h1 class="mt-4 max-w-4xl text-4xl sm:text-5xl lg:text-6xl">Project thinking, process, and visual narratives</h1>
+      <p class="mt-5 max-w-3xl text-base leading-8 text-stone-200 sm:text-lg">
+        A narrative archive of selected work. Each page can combine long-form text, image blocks, and video
+        references pulled directly from Strapi.
+      </p>
+    </div>
+  </section>
+
+  <section class="relative flex min-h-screen items-center justify-center text-stone-700">
+    <div class="pointer-events-none absolute inset-0 overflow-hidden text-center font-pacioli text-[100vh] text-stone-50 -leading-[20rem]">
+      e
+    </div>
+
+    <div class="z-1 w-11/12 max-w-[1366px] py-20">
+      <div class="max-w-3xl">
+        <h2 class="text-2xl lg:text-4xl">Case Study Archive</h2>
+        <p class="mt-2 leading-8 text-stone-500">
+          Featured editorial pages backed by the new Strapi case-study collection.
+        </p>
+      </div>
+
+      {
+        !isCaseStudyConfigured() ? (
+          <div class="mt-10 rounded-2xl border border-amber-300 bg-amber-50 px-6 py-5 text-amber-900">
+            Add `STRAPI_URL` to this Astro app to load case studies.
+          </div>
+        ) : loadError ? (
+          <div class="mt-10 rounded-2xl border border-amber-300 bg-amber-50 px-6 py-5 text-amber-900">
+            <p>{loadError}</p>
+            {
+              !hasAuth ? (
+                <p class="mt-2 text-sm text-amber-800">
+                  If the case-study collection is not public, add `STRAPI_API_TOKEN` to this app.
+                </p>
+              ) : null
+            }
+          </div>
+        ) : caseStudies.length === 0 ? (
+          <div class="mt-10 rounded-2xl border border-dashed border-stone-300 bg-white px-6 py-12 text-center text-stone-500">
+            No case studies are published yet.
+          </div>
+        ) : (
+          <>
+            {
+              featuredCaseStudy ? (
+                <a
+                  href={`/case-studies/${featuredCaseStudy.slug}`}
+                  class="mt-10 grid overflow-hidden rounded-[2rem] border border-stone-300 bg-white shadow-[0_30px_80px_rgba(28,25,23,0.08)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_35px_90px_rgba(28,25,23,0.12)] lg:grid-cols-[1.15fr_0.85fr]"
+                >
+                  <div class="relative min-h-[320px] overflow-hidden bg-stone-200">
+                    {
+                      featuredCaseStudy.thumbnail ? (
+                        <img
+                          src={featuredCaseStudy.thumbnail.largeUrl || featuredCaseStudy.thumbnail.url}
+                          alt={featuredCaseStudy.thumbnail.alt}
+                          class="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div class="h-full w-full bg-[linear-gradient(135deg,#d6d3d1_0%,#78716c_45%,#1c1917_100%)]"></div>
+                      )
+                    }
+                    <div class="absolute inset-0 bg-gradient-to-r from-stone-950/55 via-stone-950/20 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 p-6 text-white sm:p-8">
+                      <p class="text-[0.72rem] uppercase tracking-[0.35em] text-stone-200">Featured case study</p>
+                      <h3 class="mt-3 max-w-xl text-3xl leading-tight sm:text-4xl">{featuredCaseStudy.title}</h3>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col justify-between gap-6 p-6 sm:p-8">
+                    <div>
+                      <p class="mt-5 text-lg leading-8 text-stone-600">
+                        {featuredCaseStudy.shortDescription || "Open the full case study to review narrative blocks, imagery, and supporting media."}
+                      </p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 text-[0.7rem] uppercase tracking-[0.24em] text-stone-500">
+                      <span class="rounded-full border border-stone-300 px-4 py-2">Editorial page</span>
+                      <span class="rounded-full border border-stone-300 px-4 py-2">Strapi powered</span>
+                    </div>
+
+                    <span class="inline-flex items-center gap-2 text-sm uppercase tracking-[0.25em] text-stone-800">
+                      Open case study
+                      <span aria-hidden="true">-></span>
+                    </span>
+                  </div>
+                </a>
+              ) : null
+            }
+
+            {
+              remainingCaseStudies.length > 0 ? (
+                <div class="mt-14">
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                      <p class="text-sm uppercase tracking-[0.3em] text-stone-400">Archive grid</p>
+                      <h3 class="mt-2 text-2xl lg:text-3xl">More case studies</h3>
+                    </div>
+                    <p class="max-w-xl text-sm leading-7 text-stone-500">
+                      Each card opens a long-form page composed from Strapi blocks.
+                    </p>
+                  </div>
+
+                  <div class="mt-8 grid grid-cols-1 gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+                    {remainingCaseStudies.map((caseStudy) => <ProjectCard project={caseStudy} />)}
+                  </div>
+                </div>
+              ) : null
+            }
+          </>
+        )
+      }
+    </div>
+  </section>
+</Layout>

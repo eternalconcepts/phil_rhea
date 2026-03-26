@@ -1,11 +1,60 @@
 ---
-import { Picture } from "astro:assets"
-import { imageConfig } from "astro:assets"
-
 const CDN_URL = import.meta.env.CDN_URL || ""
-const { homePage } = Astro.props
 
-const projectCards = homePage?.projectCard ?? []
+const {
+  homePage,
+  items: providedItems,
+  title = "Past Projects",
+  description = "",
+  columnsClass = "lg:grid-cols-4",
+} = Astro.props
+
+const items = providedItems ?? homePage?.projectCard ?? []
+
+function normalizeItem(item) {
+  if (item?.categoryTitle) {
+    const media = item.categoryImg || {}
+    const { url = "", width, height, formats = {} } = media
+    const { thumbnail, small, medium, large } = formats
+
+    return {
+      id: item.id || item.categoryTitle,
+      title: item.categoryTitle,
+      description: item.categoryDesc || "",
+      href: null,
+      image: {
+        url: url ? `${CDN_URL}${url}` : "",
+        width,
+        height,
+        srcSet: [thumbnail, small, medium, large]
+          .filter((format) => format?.url)
+          .map((format) => `${CDN_URL}${format.url} ${format.width}w`)
+          .join(", "),
+      },
+    }
+  }
+
+  return {
+    id: item.id || item.slug || item.title,
+    title: item.title || "Untitled project",
+    description: item.shortDescription || item.projectDescription || "",
+    href: item.slug
+      ? item.type === "case-study"
+        ? `/case-studies/${item.slug}`
+        : `/portfolio/${item.slug}`
+      : null,
+    image: item.thumbnail
+      ? {
+          url: item.thumbnail.url,
+          width: item.thumbnail.width,
+          height: item.thumbnail.height,
+          srcSet: "",
+        }
+      : null,
+  }
+}
+
+const cards = items.map(normalizeItem)
 ---
 
 <section
@@ -17,44 +66,50 @@ const projectCards = homePage?.projectCard ?? []
     e
   </div>
   <div class="w-11/12 m-auto max-w-[1366px] flex flex-col py-20 z-1">
-    <h2 class="text-2xl lg:text-4xl">Past Projects</h2>
-    <p class="mt-2">description about past projects</p>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mt-10">
+    <h2 class="text-2xl lg:text-4xl">{title}</h2>
+    <p class="mt-2 max-w-3xl leading-8 text-stone-500">{description}</p>
+    <div class={`grid grid-cols-1 gap-10 mt-10 sm:grid-cols-2 ${columnsClass}`}>
       {
-        projectCards.length === 0 ? (
+        cards.length === 0 ? (
           <p class="col-span-full text-center text-red-500">
             No projects found – check your Strapi data!
           </p>
         ) : (
-          projectCards.map((card) => {
-            // 3) Destructure your image and formats
-            const { url, width, height, formats = {} } = card.categoryImg
-            const { thumbnail, small, medium, large } = formats
-
-            // 4) Build a srcset exactly like your hero slider did
-            const srcSet = [thumbnail, small, medium, large]
-              .filter((f) => f?.url)
-              .map((f) => `${CDN_URL}${f.url} ${f.width}w`)
-              .join(", ")
-
-            return (
-              <div class="grid grid-rows-[auto_auto_1fr] " key={card.id}>
-                <div>
-                  <img
-                    src={`${CDN_URL}${url}`}
-                    width={width}
-                    height={height}
-                    srcset={srcSet}
-                    sizes="(min-width:1024px)25vw,50vw"
-                    alt={card.categoryTitle}
-                    loading="lazy"
-                    decoding="async"
-                    class="w-full h-full object-cover rounded-xl aspect-video lg:aspect-square border border-stone-400 transition-opacity duration-500 ease-in-out"
-                  />
+          cards.map((card) => {
+            const content = (
+              <div class="grid h-full grid-rows-[auto_auto_1fr]">
+                <div class="overflow-hidden rounded-xl border border-stone-400 bg-stone-100">
+                  {
+                    card.image?.url ? (
+                      <img
+                        src={card.image.url}
+                        width={card.image.width}
+                        height={card.image.height}
+                        srcset={card.image.srcSet || undefined}
+                        sizes="(min-width:1024px)25vw,50vw"
+                        alt={card.title}
+                        loading="lazy"
+                        decoding="async"
+                        class="w-full h-full object-cover rounded-xl aspect-video lg:aspect-square transition duration-500 ease-in-out"
+                      />
+                    ) : (
+                      <div class="grid aspect-video place-items-center text-sm text-stone-500 lg:aspect-square">
+                        Image coming soon
+                      </div>
+                    )
+                  }
                 </div>
-                <h3 class="text-xl lg:text-2xl pt-4 ">{card.categoryTitle}</h3>
-                <p class="mt-2 h-full flex align-top">{card.categoryDesc}</p>
+                <h3 class="text-xl lg:text-2xl pt-4">{card.title}</h3>
+                <p class="mt-2 h-full leading-7 text-stone-600">{card.description}</p>
               </div>
+            )
+
+            return card.href ? (
+              <a class="group" href={card.href} key={card.id}>
+                {content}
+              </a>
+            ) : (
+              <div key={card.id}>{content}</div>
             )
           })
         )

@@ -6,6 +6,8 @@ import BioSection from "../components/homepage/BioSection.astro"
 import TestimonialsCarousel from "../components/homepage/TestimonialsCarousel.astro"
 import ContactSection from "../components/homepage/ContactSection.astro"
 import fetchApi from "../lib/strapi"
+import { fetchCaseStudies, isCaseStudyConfigured } from "../lib/server/case-studies"
+import { fetchPortfolioProjects, isPortfolioConfigured } from "../lib/server/portfolio"
 
 const homePage = await fetchApi({
   endpoint: "home-page",
@@ -18,6 +20,25 @@ const homePage = await fetchApi({
     "populate[Testimonials]": "true",
   },
 })
+
+let portfolioProjects = []
+let caseStudies = []
+
+if (isPortfolioConfigured()) {
+  try {
+    portfolioProjects = (await fetchPortfolioProjects()).slice(0, 3)
+  } catch (error) {
+    console.error("Unable to load homepage portfolio previews.", error)
+  }
+}
+
+if (isCaseStudyConfigured()) {
+  try {
+    caseStudies = (await fetchCaseStudies()).slice(0, 4)
+  } catch (error) {
+    console.error("Unable to load homepage case-study previews.", error)
+  }
+}
 ---
 
 <Layout
@@ -25,7 +46,17 @@ const homePage = await fetchApi({
   description="Architecture, Remodeling, Elevation and Renderings by Philip J. Rhea"
 >
   <HeroBanner homePage={homePage} />
-  <PastProjects homePage={homePage} />
+  <PastProjects
+    title="Portfolio"
+    description="A curated set of recent portfolio pages with project context, visual references, and expanded case-study detail."
+    items={portfolioProjects}
+    columnsClass="lg:grid-cols-3"
+  />
+  <PastProjects
+    title="Case Studies"
+    description="Selected editorial studies with long-form narrative, imagery, and video blocks pulled from Strapi."
+    items={caseStudies.length > 0 ? caseStudies : homePage?.projectCard ?? []}
+  />
   <BioSection homePage={homePage} />
   <section
     class="w-11/12 m-auto max-w-[1200px] flex flex-col items-center justify-center min-h-[50vh] py-10"
