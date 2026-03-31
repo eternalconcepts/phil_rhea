@@ -87,10 +87,6 @@ function mapProjectSummary(entry) {
     title: String(entry.title || "Untitled project"),
     address: String(entry.projectAddress || ""),
     size: String(entry.projectSize || ""),
-    siteArea: String(entry.siteArea || ""),
-    projectArea: String(entry.projectArea || ""),
-    category: String(entry.projectCategory || ""),
-    projectType: String(entry.projectType || ""),
     shortDescription: String(entry.projectDescription || ""),
     thumbnail,
   }
