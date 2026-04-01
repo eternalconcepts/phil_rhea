@@ -15,12 +15,22 @@ function getContactConfig() {
   const smtpUser = (import.meta.env.GMAIL_SMTP_USER ?? '').toString().trim();
   const smtpPass = (import.meta.env.GMAIL_SMTP_PASS ?? '').toString().trim();
   const recipientEmail = (import.meta.env.CONTACT_RECIPIENT_EMAIL ?? '').toString().trim();
+  const senderName = (import.meta.env.CONTACT_SENDER_NAME ?? 'Philip J. Rhea Website').toString().trim();
 
   if (!smtpUser || !smtpPass || !recipientEmail) {
     return null;
   }
 
-  return { smtpUser, smtpPass, recipientEmail };
+  return { smtpUser, smtpPass, recipientEmail, senderName };
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
 export const POST: APIRoute = async ({ request }) => {
@@ -40,10 +50,19 @@ export const POST: APIRoute = async ({ request }) => {
   const phone   = (form.get('phone')   ?? '').toString().trim();
   const email   = (form.get('email')   ?? '').toString().trim();
   const message = (form.get('message') ?? '').toString().trim();
+  const safeName = escapeHtml(name || 'Unknown');
+  const safePhone = escapeHtml(phone || 'Not provided');
+  const safeEmail = escapeHtml(email);
+  const safeMessage = escapeHtml(message).replace(/\n/g, '<br>');
 
   // basic validation
-  if (!email || !message) {
-    return jsonResponse({ error: 'Email and message are required.' }, 400);
+  if (!name || !email || !message) {
+    return jsonResponse({ error: 'Name, email, and message are required.' }, 400);
+  }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email)) {
+    return jsonResponse({ error: 'Please enter a valid email address.' }, 400);
   }
 
   const config = getContactConfig();
@@ -68,25 +87,32 @@ export const POST: APIRoute = async ({ request }) => {
   });
 
   try {
-    await transporter.verify();
-
     await transporter.sendMail({
-      from: `"Website Contact" <${config.smtpUser}>`,
+      from: `"${config.senderName}" <${config.smtpUser}>`,
       to: config.recipientEmail,
       replyTo: email,
       subject: `New message from ${name || email}`,
+      text: [
+        'New website contact submission',
+        '',
+        `Name: ${name}`,
+        `Email: ${email}`,
+        `Phone: ${phone || 'Not provided'}`,
+        '',
+        'Message:',
+        message,
+      ].join('\n'),
       html: `
         <div
   style="
     background-color: #f5f5f4;
     width: 100%;
-    height: 100%;
     margin: 0;
-    padding: 0;
-    position: fixed;
+    padding: 32px 16px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    box-sizing: border-box;
   "
 >
   <div
@@ -97,44 +123,57 @@ export const POST: APIRoute = async ({ request }) => {
       background-color: #ffffff;
       padding: 3rem;
       border-radius: 0.75rem;
-      box-shadow: 5px 10px 18px #888888;
-      position: relative;
-      margin-top: 3rem;
-      margin-bottom: 3rem;
+      box-shadow: 0 20px 45px rgba(28, 25, 23, 0.15);
+      border: 1px solid #e7e5e4;
     "
   >
     <p
       style="
-        line-height: 2;
+        line-height: 1.2;
+        text-align: left;
+        font-size: 0.875rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+        color: #78716c;
+        margin: 0 0 1rem;
+      "
+    >
+      Website Contact
+    </p>
+    <p
+      style="
+        line-height: 1.2;
         text-align: left;
         font-size: 2rem;
         font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-        color: #c3003c;
+        color: #1c1917;
         max-width: 600px;
+        margin: 0 0 2rem;
       "
     >
-NEW MESSAGE FROM WEBSITE:    </p>    
+      New message from ${safeName}
+    </p>
     <p
       style="
         line-height: 2;
         text-align: justify;
-        font-size: 1.25rem;
+        font-size: 1.0625rem;
         font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-        color: #0c4a6e;
-        max-width: 600px;
+        color: #44403c;
+        max-width: 640px;
+        margin: 0;
       "
     >
-     ${message.replace(/\n/g, '<br>')}
+     ${safeMessage}
     </p>
     <hr
       style="
-        width: 83.333333%;
-        margin-left: auto;
-        margin-right: auto;
+        width: 100%;
         margin-top: 2.5rem;
         margin-bottom: 2.5rem;
         border: none;
-        border-top: 1px solid #c3003c;
+        border-top: 1px solid #d6d3d1;
       "
     />
     <table
@@ -143,25 +182,25 @@ NEW MESSAGE FROM WEBSITE:    </p>
     max-width: 700px;
     margin: auto;
     border-collapse: collapse;
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-    color: #0c4a6e;
+    color: #44403c;
   "
 >
   <tbody>
     <tr>
       <td style="padding: 0.5rem 0.5rem;">Sender Name:</td>
-      <td style="padding: 0.5rem 0.5rem;">${name || '—'}</td>
+      <td style="padding: 0.5rem 0.5rem;">${safeName}</td>
     </tr>
     <tr>
       <td style="padding: 0.5rem 0.5rem;">Sender Email:</td>
       <td style="padding: 0.5rem 0.5rem;">
-        <a href="mailto:${email}">${email}</a>
+        <a href="mailto:${safeEmail}" style="color: #0f766e;">${safeEmail}</a>
       </td>
     </tr>
     <tr>
       <td style="padding: 0.5rem 0.5rem;">Sender Phone:</td>
-      <td style="padding: 0.5rem 0.5rem;">${phone || '—'}</td>
+      <td style="padding: 0.5rem 0.5rem;">${safePhone}</td>
     </tr>
   </tbody>
 </table>
@@ -169,7 +208,7 @@ NEW MESSAGE FROM WEBSITE:    </p>
 </div>`,
     });
 
-    return jsonResponse({ success: true }, 200);
+    return jsonResponse({ success: true, message: 'Message sent successfully.' }, 200);
   } catch (err: any) {
     console.error('Gmail send error:', err);
     return jsonResponse(

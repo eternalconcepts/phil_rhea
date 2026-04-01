@@ -1,0 +1,100 @@
+---
+import HeroBanner from "../components/homepage/HeroBanner.astro"
+import Layout from "../components/layout/Layout.astro"
+import PastProjects from "../components/homepage/PastProjects.astro"
+import BioSection from "../components/homepage/BioSection.astro"
+import TestimonialsCarousel from "../components/homepage/TestimonialsCarousel.astro"
+import ContactSection from "../components/homepage/ContactSection.astro"
+import fetchApi from "../lib/strapi"
+import { sampleCaseStudies, samplePortfolioProjects } from "../lib/sample-content"
+import { isTemporaryStrapiError } from "../lib/strapi-request"
+import { fetchCaseStudies, isCaseStudyConfigured } from "../lib/server/case-studies"
+import { fetchPortfolioProjects, isPortfolioConfigured } from "../lib/server/portfolio"
+
+let homePage = null
+let isHomepageOutage = false
+
+try {
+  homePage = await fetchApi({
+    endpoint: "home-page",
+    wrappedByKey: "data",
+    query: {
+      "populate[herobanner][populate][heroSlides][populate]": "slide_image",
+      "populate[projectCard][populate]": "categoryImg",
+      "populate[bioImgMain]": "true",
+      "populate[bioImgSecond]": "true",
+      "populate[Testimonials]": "true",
+    },
+  })
+} catch (error) {
+  console.error("Unable to load homepage content.", error)
+  isHomepageOutage = isTemporaryStrapiError(error)
+  homePage = null
+}
+
+let portfolioProjects = []
+let caseStudies = []
+
+if (isPortfolioConfigured()) {
+  try {
+    portfolioProjects = (await fetchPortfolioProjects()).slice(0, 3)
+  } catch (error) {
+    console.error("Unable to load homepage portfolio previews.", error)
+  }
+}
+
+if (isCaseStudyConfigured()) {
+  try {
+    caseStudies = (await fetchCaseStudies()).slice(0, 4)
+  } catch (error) {
+    console.error("Unable to load homepage case-study previews.", error)
+  }
+}
+
+if (portfolioProjects.length === 0) {
+  portfolioProjects = samplePortfolioProjects
+}
+
+if (caseStudies.length === 0) {
+  caseStudies = sampleCaseStudies
+}
+---
+
+<Layout
+  title="Eternal Concepts by Philip J. Rhea"
+  description="Architecture, Remodeling, Elevation and Renderings by Philip J. Rhea"
+>
+  {
+    isHomepageOutage ? (
+      <section class="bg-amber-50 px-6 py-4 text-center text-sm text-amber-900">
+        Homepage content is temporarily unavailable from Strapi. Showing fallback content where possible.
+      </section>
+    ) : null
+  }
+  <HeroBanner homePage={homePage} />
+  <PastProjects
+    title="Portfolio"
+    description="A curated set of recent portfolio pages with project context, visual references, and expanded case-study detail."
+    items={portfolioProjects}
+    columnsClass="lg:grid-cols-3"
+  />
+  <PastProjects
+    title="Case Studies"
+    description="Selected editorial studies with long-form narrative, imagery, and video blocks pulled from Strapi."
+    items={caseStudies.length > 0 ? caseStudies : homePage?.projectCard ?? []}
+  />
+  <BioSection homePage={homePage} />
+  <section
+    class="w-11/12 m-auto max-w-[1200px] flex flex-col items-center justify-center min-h-[50vh] py-10"
+  >
+    <h2 class="text-2xl">Testimonials</h2>
+    <p class="max-w-[800px] leading-loose">
+      Perhaps the most rewarding aspect of my work is the feedback from clients
+      who have trusted me to bring their vision to life and see it come to
+      fruition.
+    </p>
+    <TestimonialsCarousel homePage={homePage} />
+  </section>
+
+  <ContactSection />
+</Layout>

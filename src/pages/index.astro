@@ -1,100 +1,56 @@
 ---
-import HeroBanner from "../components/homepage/HeroBanner.astro"
-import Layout from "../components/layout/Layout.astro"
-import PastProjects from "../components/homepage/PastProjects.astro"
-import BioSection from "../components/homepage/BioSection.astro"
-import TestimonialsCarousel from "../components/homepage/TestimonialsCarousel.astro"
-import ContactSection from "../components/homepage/ContactSection.astro"
-import fetchApi from "../lib/strapi"
-import { sampleCaseStudies, samplePortfolioProjects } from "../lib/sample-content"
-import { isTemporaryStrapiError } from "../lib/strapi-request"
-import { fetchCaseStudies, isCaseStudyConfigured } from "../lib/server/case-studies"
-import { fetchPortfolioProjects, isPortfolioConfigured } from "../lib/server/portfolio"
-
-let homePage = null
-let isHomepageOutage = false
-
-try {
-  homePage = await fetchApi({
-    endpoint: "home-page",
-    wrappedByKey: "data",
-    query: {
-      "populate[herobanner][populate][heroSlides][populate]": "slide_image",
-      "populate[projectCard][populate]": "categoryImg",
-      "populate[bioImgMain]": "true",
-      "populate[bioImgSecond]": "true",
-      "populate[Testimonials]": "true",
-    },
-  })
-} catch (error) {
-  console.error("Unable to load homepage content.", error)
-  isHomepageOutage = isTemporaryStrapiError(error)
-  homePage = null
-}
-
-let portfolioProjects = []
-let caseStudies = []
-
-if (isPortfolioConfigured()) {
-  try {
-    portfolioProjects = (await fetchPortfolioProjects()).slice(0, 3)
-  } catch (error) {
-    console.error("Unable to load homepage portfolio previews.", error)
-  }
-}
-
-if (isCaseStudyConfigured()) {
-  try {
-    caseStudies = (await fetchCaseStudies()).slice(0, 4)
-  } catch (error) {
-    console.error("Unable to load homepage case-study previews.", error)
-  }
-}
-
-if (portfolioProjects.length === 0) {
-  portfolioProjects = samplePortfolioProjects
-}
-
-if (caseStudies.length === 0) {
-  caseStudies = sampleCaseStudies
-}
+import "../styles/global.css"
+import { Image } from "astro:assets"
+import heroBackground from "../images/sta_02.jpg"
+import PJRLogoEmblem from "../components/icons/PJRLogoEmblem.astro"
+import ContactForm from "../components/homepage/ContactForm.astro"
 ---
 
-<Layout
-  title="Eternal Concepts by Philip J. Rhea"
-  description="Architecture, Remodeling, Elevation and Renderings by Philip J. Rhea"
->
-  {
-    isHomepageOutage ? (
-      <section class="bg-amber-50 px-6 py-4 text-center text-sm text-amber-900">
-        Homepage content is temporarily unavailable from Strapi. Showing fallback content where possible.
-      </section>
-    ) : null
-  }
-  <HeroBanner homePage={homePage} />
-  <PastProjects
-    title="Portfolio"
-    description="A curated set of recent portfolio pages with project context, visual references, and expanded case-study detail."
-    items={portfolioProjects}
-    columnsClass="lg:grid-cols-3"
-  />
-  <PastProjects
-    title="Case Studies"
-    description="Selected editorial studies with long-form narrative, imagery, and video blocks pulled from Strapi."
-    items={caseStudies.length > 0 ? caseStudies : homePage?.projectCard ?? []}
-  />
-  <BioSection homePage={homePage} />
-  <section
-    class="w-11/12 m-auto max-w-[1200px] flex flex-col items-center justify-center min-h-[50vh] py-10"
-  >
-    <h2 class="text-2xl">Testimonials</h2>
-    <p class="max-w-[800px] leading-loose">
-      Perhaps the most rewarding aspect of my work is the feedback from clients
-      who have trusted me to bring their vision to life and see it come to
-      fruition.
-    </p>
-    <TestimonialsCarousel homePage={homePage} />
-  </section>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Philip J. Rhea | Architect</title>
+    <meta
+      name="description"
+      content="Architecture and design by Philip J. Rhea."
+    />
+  </head>
+  <body class="m-0 bg-stone-950 text-white">
+    <main class="relative isolate min-h-screen overflow-hidden">
+      <Image
+        src={heroBackground}
+        alt=""
+        widths={[750, 1080, 1600, 2200]}
+        sizes="100vw"
+        format="webp"
+        quality={80}
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+      <div class="absolute inset-0 bg-gradient-to-b from-stone-950/50 via-stone-950/20 to-stone-950/60"></div>
+      <div class="absolute inset-0 radial-gradient-[ellipse_at_top_right,_var(--tw-gradient-stops)] from-stone-950/80 via-transparent to-stone-950/80"></div>
+      </div>
 
-  <ContactSection />
-</Layout>
+      <section class="relative flex flex-col z-10 flex min-h-screen items-center justify-center gap-2">
+<div class="min-w-[400px] w-[35vw] aspect-square rounded-full bg-radial from-black/70  to-black/0 to-70% absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 "/>
+          <PJRLogoEmblem class="w-28 fill-white dropshadow-lg sm:w-32 z-1" />
+          <p class="font-trajan text-sm uppercase tracking-loose text-stone-200 sm:text-base z-1">
+            Philip J. Rhea<br/>Architect
+          </p>
+          <button
+            type="button"
+            class="rounded-full border border-white/70 bg-white/8 px-8 py-3 font-trajan text-sm uppercase tracking-[0.32em] text-white backdrop-blur-sm transition duration-300 hover:-translate-y-1
+            hover:shadow-lg hover:bg-white hover:text-stone-900 cursor-pointer z-1"
+            data-contact-open
+          >
+            Contact
+          </button>
+
+
+      </section>
+
+      <ContactForm />
+    </main>
+  </body>
+</html>

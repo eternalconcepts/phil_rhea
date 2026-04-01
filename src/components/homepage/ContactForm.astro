@@ -1,0 +1,318 @@
+---
+const formId = "landing-contact-form"
+---
+
+<section
+  class="fixed inset-0 z-30"
+  data-contact-overlay
+  aria-hidden="true"
+  hidden
+>
+    <button
+      type="button"
+      id="close"
+      class="fixed top-4 -right-20 z-10 size-10 rotate-180 rounded-full border border-stone-400 bg-white/80 text-stone-700 transition-[right,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-stone-700 sm:top-6"
+      aria-label="Close contact form"
+      data-contact-close
+    >
+&#10005;
+    </button>
+  <div
+    class="absolute inset-0 flex items-start justify-center overflow-y-auto bg-white p-5 items-center translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+    data-contact-panel
+  >
+
+
+    <div class="flex w-full max-w-[600px] shrink-0 flex-col" data-contact-content>
+      <p
+        class="font-trajan mb-3 text-[0.85rem] uppercase tracking-[0.34em] text-stone-500 opacity-0 translate-y-6 transition-all duration-500 ease-out"
+        data-contact-reveal
+      >
+        Contact
+      </p>
+      <h2
+        class="font-trajan text-3xl m-0 text-stone-900 opacity-0 translate-y-6 transition-all duration-500 ease-out"
+        data-contact-reveal
+      >
+        Philip J. Rhea
+      </h2>
+      <p
+        class="mt-4 mb-9 max-w-[34rem] text-base leading-[1.7] text-stone-600 opacity-0 translate-y-6 transition-all duration-500 ease-out"
+        data-contact-reveal
+      >
+Share your project, ideas, or inquiries. Please fill out the form below, and I'll get back to you as soon as possible.
+      </p>
+
+      <form
+        id={formId}
+        class="flex flex-col gap-4 opacity-0 translate-y-6 transition-all duration-500 ease-out"
+        action="/api/contact"
+        method="POST"
+        novalidate
+        data-contact-reveal
+      >
+        <input
+          type="text"
+          name="hp_field"
+          tabindex="-1"
+          autocomplete="off"
+          class="absolute h-px w-px overflow-hidden whitespace-nowrap border-0 p-0 [-webkit-clip-path:inset(50%)] [clip:rect(0,0,0,0)]"
+          aria-hidden="true"
+        />
+
+        <input
+          type="text"
+          name="name"
+          autocomplete="name"
+          placeholder="Full Name"
+          required
+          class="contact-field border rounded-xl border-stone-300 bg-stone-50 p-3 text-stone-700 transition hover:bg-white focus:bg-white focus:outline-none"
+        />
+
+        <input
+          type="email"
+          name="email"
+          autocomplete="email"
+          placeholder="E-Mail"
+          required
+          class="contact-field border rounded-xl border-stone-300 bg-stone-50 p-3 text-stone-700 transition hover:bg-white focus:bg-white focus:outline-none"
+        />
+
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Telephone"
+          autocomplete="tel"
+          required
+          class="contact-field border rounded-xl border-stone-300 bg-stone-50 p-3 text-stone-700 transition hover:bg-white focus:bg-white focus:outline-none"
+        />
+
+
+        <textarea
+          name="message"
+          rows="6"
+          placeholder="Message"
+          required
+          class="contact-field w-full rounded-xl border border-stone-300 bg-stone-50 p-3 text-stone-700 transition hover:bg-white focus:bg-white focus:outline-none"
+        ></textarea>
+
+
+        <button
+          type="submit"
+          class="font-trajan rounded-xl border border-stone-700 bg-stone-700 px-7 py-4 uppercase tracking-[0.2em] text-white transition hover:-translate-y-1 hover:bg-white 
+          hover:text-stone-700 hover:shadow-xl disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0 sm:w-max w-full cursor-pointer"
+        >
+          Send Message
+        </button>
+
+        <p
+          class="mt-1 min-h-6 text-[0.95rem] text-stone-600 opacity-0 transition"
+          data-contact-status
+          aria-live="polite"
+        ></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  const overlay = document.querySelector("[data-contact-overlay]")
+  const openButtons = document.querySelectorAll("[data-contact-open]")
+  const closeButtons = document.querySelectorAll("[data-contact-close]")
+  const closeButton = document.getElementById("close")
+  const panel = overlay?.querySelector("[data-contact-panel]")
+  const form = document.getElementById("landing-contact-form")
+  const focusTarget = form?.querySelector("input")
+  const status = form?.querySelector("[data-contact-status]")
+  const submitButton = form?.querySelector('button[type="submit"]')
+  const requiredFields = form?.querySelectorAll("[required]") ?? []
+  const defaultButtonText = submitButton?.textContent ?? "Send Message"
+  const revealItems = overlay?.querySelectorAll("[data-contact-reveal]") ?? []
+  const revealDelayClasses = [
+    "delay-[260ms]",
+    "delay-[330ms]",
+    "delay-[410ms]",
+    "delay-[500ms]",
+  ]
+
+  if (overlay) {
+    let closeTimer
+
+    const setFieldState = (field) => {
+      const isInvalid = !field.checkValidity()
+      field.classList.toggle("border-red-700", isInvalid)
+      field.classList.toggle("border-stone-300", !isInvalid)
+    }
+
+    const clearFieldState = (field) => {
+      field.classList.remove("border-red-700")
+      field.classList.add("border-stone-300")
+    }
+
+    const validateRequiredFields = () => {
+      let isValid = true
+
+      requiredFields.forEach((field) => {
+        setFieldState(field)
+        if (!field.checkValidity()) {
+          isValid = false
+        }
+      })
+
+      return isValid
+    }
+
+    const showReveals = () => {
+      revealItems.forEach((item, index) => {
+        item.classList.remove("opacity-0", "translate-y-6")
+        item.classList.add("opacity-100", "translate-y-0", revealDelayClasses[index] ?? "delay-0")
+      })
+    }
+
+    const showCloseButton = () => {
+      closeButton?.classList.remove("-right-20")
+      closeButton?.classList.add("right-4")
+    }
+
+    const hideCloseButton = () => {
+      closeButton?.classList.remove("right-4")
+      closeButton?.classList.add("-right-20")
+    }
+
+    const hideReveals = () => {
+      revealItems.forEach((item, index) => {
+        item.classList.remove("opacity-100", "translate-y-0", revealDelayClasses[index] ?? "delay-0")
+        item.classList.add("opacity-0", "translate-y-6")
+      })
+    }
+
+    const setStatus = (message, tone) => {
+      if (!status) return
+      status.textContent = message
+      status.classList.toggle("opacity-100", Boolean(message))
+      status.classList.toggle("opacity-0", !message)
+      status.classList.remove("text-stone-600", "text-green-700", "text-red-700")
+      status.classList.add(
+        tone === "success"
+          ? "text-green-700"
+          : tone === "error"
+            ? "text-red-700"
+            : "text-stone-600",
+      )
+    }
+
+    const openOverlay = () => {
+      window.clearTimeout(closeTimer)
+      overlay.hidden = false
+      overlay.setAttribute("aria-hidden", "false")
+      overlay.dataset.open = "true"
+      document.documentElement.style.overflow = "hidden"
+      setStatus("", "")
+
+      requestAnimationFrame(() => {
+        panel?.classList.remove("translate-y-full")
+        panel?.classList.add("translate-y-0")
+        showCloseButton()
+        showReveals()
+        window.setTimeout(() => focusTarget?.focus(), 540)
+      })
+    }
+
+    const closeOverlay = () => {
+      panel?.classList.remove("translate-y-0")
+      panel?.classList.add("translate-y-full")
+      hideCloseButton()
+      hideReveals()
+      overlay.setAttribute("aria-hidden", "true")
+      overlay.dataset.open = "false"
+      document.documentElement.style.overflow = ""
+
+      closeTimer = window.setTimeout(() => {
+        overlay.hidden = true
+      }, 620)
+    }
+
+    openButtons.forEach((button) => {
+      button.addEventListener("click", openOverlay)
+    })
+
+    closeButtons.forEach((button) => {
+      button.addEventListener("click", closeOverlay)
+    })
+
+    closeButton?.addEventListener("click", closeOverlay)
+
+    requiredFields.forEach((field) => {
+      field.addEventListener("blur", () => {
+        setFieldState(field)
+      })
+
+      field.addEventListener("input", () => {
+        if (field.value.trim()) {
+          setFieldState(field)
+        } else {
+          clearFieldState(field)
+        }
+      })
+    })
+
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault()
+
+      if (!form || !submitButton) return
+
+      setStatus("", "")
+      if (!validateRequiredFields()) {
+        const firstInvalidField = Array.from(requiredFields).find((field) => {
+          return !field.checkValidity()
+        })
+        firstInvalidField?.focus()
+        setStatus("Please complete all required fields.", "error")
+        return
+      }
+
+      submitButton.disabled = true
+      submitButton.textContent = "Sending..."
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+        })
+
+        const result = await response.json().catch(() => ({}))
+
+        if (!response.ok) {
+          throw new Error(
+            typeof result?.error === "string"
+              ? result.error
+              : "We could not send your message right now. Please try again shortly.",
+          )
+        }
+
+        form.reset()
+        requiredFields.forEach((field) => {
+          clearFieldState(field)
+        })
+        setStatus("Message sent successfully.", "success")
+      } catch (error) {
+        setStatus(
+          error instanceof Error
+            ? error.message
+            : "We could not send your message right now. Please try again shortly.",
+          "error",
+        )
+      } finally {
+        submitButton.disabled = false
+        submitButton.textContent = defaultButtonText
+      }
+    })
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && overlay.dataset.open === "true") {
+        event.preventDefault()
+        closeOverlay()
+      }
+    })
+  }
+</script>
