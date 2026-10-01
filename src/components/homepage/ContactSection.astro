@@ -1,5 +1,4 @@
 ---
-
 ---
 
 <style>
@@ -40,10 +39,10 @@
     >
       <input
         type="text"
-        name="hp_field"
+        name="_cp"
         tabindex="-1"
         autocomplete="off"
-        class="hidden"
+        class="sr-only"
         aria-hidden="true"
       />
       <h3>Start a conversation</h3>
@@ -97,7 +96,8 @@
       <button
         id="contact-submit"
         type="submit"
-        class="grid grid-cols-[auto_1fr] relative w-[14rem] items-center justify-center border-2 border-rose-600 lg:border-stone-400 rounded-lg p-3 text-rose-600 lg:text-stone-400 uppercase bg-white lg:bg-transparent hover:border-rose-600 hover:text-rose-600 hover:bg-white hover:-translate-y-1 duration-200 ease-in-out hover:shadow-xl cursor-pointer"
+        disabled
+        class="grid grid-cols-[auto_1fr] relative w-[14rem] items-center justify-center border-2 border-rose-600 lg:border-stone-400 rounded-lg p-3 text-rose-600 lg:text-stone-400 uppercase bg-white lg:bg-transparent hover:border-rose-600 hover:text-rose-600 hover:bg-white hover:-translate-y-1 duration-200 ease-in-out hover:shadow-xl cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
       >
         <!-- default label -->
         <svg
@@ -236,6 +236,20 @@
       const check = btn.querySelector(".btn-check")
       const labelEl = btn.querySelector(".btn-label")
       const statusEl = document.getElementById("contact-status")
+      const honeypot = form.querySelector('input[name="_cp"]')
+      const requiredFields = form.querySelectorAll("[required]")
+      let isSending = false
+
+      const updateSubmitState = () => {
+        btn.disabled = isSending || !honeypot || honeypot.value !== "" ||
+          !Array.from(requiredFields).every((field) => field.value.trim() !== "" && field.checkValidity())
+      }
+
+      form.addEventListener("input", updateSubmitState)
+      form.addEventListener("change", updateSubmitState)
+      form.addEventListener("reset", () => queueMicrotask(updateSubmitState))
+      window.setInterval(updateSubmitState, 250)
+      updateSubmitState()
 
       const setStatus = (message, type) => {
         if (!statusEl) return
@@ -263,7 +277,19 @@
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault()
-        btn.disabled = true
+        if (isSending) return
+        if (!honeypot || honeypot.value !== "") {
+          updateSubmitState()
+          setStatus("Unable to submit this form.", "error")
+          return
+        }
+        if (!Array.from(requiredFields).every((field) => field.value.trim() !== "" && field.checkValidity())) {
+          updateSubmitState()
+          setStatus("Please complete all required fields.", "error")
+          return
+        }
+        isSending = true
+        updateSubmitState()
         statusEl?.classList.add("hidden")
 
         // → Enter “Sending Message” state
@@ -308,7 +334,8 @@
             spinner.classList.add("hidden")
             sendIcon.classList.remove("hidden")
             labelEl.textContent = "Send Message"
-            btn.disabled = false
+            isSending = false
+            updateSubmitState()
             statusEl?.classList.add("hidden")
           }, 5000)
         } catch (err) {
@@ -318,7 +345,8 @@
           sendIcon.classList.remove("hidden")
           check.classList.add("hidden")
           labelEl.textContent = "Send Message"
-          btn.disabled = false
+          isSending = false
+          updateSubmitState()
           setStatus(
             err instanceof Error
               ? err.message

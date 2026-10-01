@@ -7,15 +7,15 @@ import nodemailer from 'nodemailer';
 function jsonResponse(body: Record<string, unknown>, status: number) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
   });
 }
 
 function getContactConfig() {
-  const smtpUser = (import.meta.env.GMAIL_SMTP_USER ?? '').toString().trim();
-  const smtpPass = (import.meta.env.GMAIL_SMTP_PASS ?? '').toString().trim();
-  const recipientEmail = (import.meta.env.CONTACT_RECIPIENT_EMAIL ?? '').toString().trim();
-  const senderName = (import.meta.env.CONTACT_SENDER_NAME ?? 'Philip J. Rhea Website').toString().trim();
+  const smtpUser = (process.env.GMAIL_SMTP_USER ?? import.meta.env.GMAIL_SMTP_USER ?? '').trim();
+  const smtpPass = (process.env.GMAIL_SMTP_PASS ?? import.meta.env.GMAIL_SMTP_PASS ?? '').trim();
+  const recipientEmail = (process.env.CONTACT_RECIPIENT_EMAIL ?? import.meta.env.CONTACT_RECIPIENT_EMAIL ?? '').trim();
+  const senderName = (process.env.CONTACT_SENDER_NAME ?? import.meta.env.CONTACT_SENDER_NAME ?? 'Philip J. Rhea Website').trim();
 
   if (!smtpUser || !smtpPass || !recipientEmail) {
     return null;
@@ -39,11 +39,20 @@ export const POST: APIRoute = async ({ request }) => {
     return jsonResponse({ error: 'Unsupported form submission.' }, 415);
   }
 
-  const form = await request.formData();
+  let form: FormData;
+  try {
+    form = await request.formData();
+  } catch {
+    return jsonResponse({ error: 'Invalid form submission.' }, 400);
+  }
 
-  // honeypot to catch bots
-  if (form.get('hp_field')) {
-    return new Response(null, { status: 204 });
+  // Check every value so duplicate fields cannot hide a filled honeypot.
+  const honeypotValues = form.getAll('_cp');
+  if (honeypotValues.some((value) => value !== '')) {
+    return jsonResponse({ error: 'Unable to submit this form.' }, 403);
+  }
+  if (honeypotValues.length !== 1) {
+    return jsonResponse({ error: 'Please reload the page and try again.' }, 400);
   }
 
   const name    = (form.get('name')    ?? '').toString().trim();
@@ -56,13 +65,17 @@ export const POST: APIRoute = async ({ request }) => {
   const safeMessage = escapeHtml(message).replace(/\n/g, '<br>');
 
   // basic validation
-  if (!name || !email || !message) {
-    return jsonResponse({ error: 'Name, email, and message are required.' }, 400);
+  if (!name || !email || !phone || !message) {
+    return jsonResponse({ error: 'Name, email, telephone, and message are required.' }, 400);
   }
 
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailPattern.test(email)) {
     return jsonResponse({ error: 'Please enter a valid email address.' }, 400);
+  }
+
+  if (name.length > 120 || email.length > 254 || phone.length > 50 || message.length > 5000) {
+    return jsonResponse({ error: 'One or more fields are too long. Please shorten your message.' }, 400);
   }
 
   const config = getContactConfig();
